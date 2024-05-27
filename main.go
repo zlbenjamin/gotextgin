@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/zlbenjamin/gotextgin/api"
 )
 
 func init() {
@@ -17,6 +18,8 @@ func init() {
 
 func main() {
 	r := gin.Default()
+
+	api.InitTextApis(r)
 
 	s := &http.Server{
 		Addr:           ":40000",
