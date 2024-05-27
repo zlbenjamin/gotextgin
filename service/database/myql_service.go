@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -111,4 +112,18 @@ func CreateMySqlTable(ddl string) {
 	// fmt.Println(result, reflect.TypeOf(result)) // {0xc00040a000 0xc00040c090} sql.driverResult
 	// fmt.Println(result.RowsAffected())          // 0 <nil>
 	// fmt.Println(result.LastInsertId())          // 0 <nil>
+}
+
+// Add a record to table
+func AddRecordToTable(dml string, params ...any) (int32, error) {
+	result, err := gsqlDb.Exec(dml, params...)
+	if err != nil {
+		return -1, errors.New("Add record failed")
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return -2, errors.New("Add record failed")
+	}
+	return int32(id), nil
 }
