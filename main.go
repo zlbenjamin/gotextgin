@@ -5,11 +5,14 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/zlbenjamin/gotextgin/api"
+	"github.com/zlbenjamin/gotextgin/service/database"
 )
 
 func init() {
 	// Connect to Database
+	database.InitMySqlPool()
 }
 
 func init() {
