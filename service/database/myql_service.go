@@ -78,3 +78,37 @@ func getMySqlInfoFromEnvironment() DbInfo {
 	return ret
 
 }
+
+// Check if the table exists
+func CheckTableExists(tableName string) bool {
+	rows, err := gsqlDb.Query("show tables")
+	if err != nil {
+		log.Panicln("Show tables. err=", err.Error())
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var item string
+		errq := rows.Scan(&item)
+		if errq != nil {
+			log.Panicln("rows.Scan. err=", err.Error())
+		}
+
+		if tableName == item {
+			return true
+		}
+	}
+
+	return false
+}
+
+// Create a table with the DDL
+func CreateMySqlTable(ddl string) {
+	_, err := gsqlDb.Exec(ddl)
+	if err != nil {
+		log.Fatalln("Create table failed: ddl=", ddl, err.Error())
+	}
+	// fmt.Println(result, reflect.TypeOf(result)) // {0xc00040a000 0xc00040c090} sql.driverResult
+	// fmt.Println(result.RowsAffected())          // 0 <nil>
+	// fmt.Println(result.LastInsertId())          // 0 <nil>
+}
