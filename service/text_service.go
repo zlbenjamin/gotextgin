@@ -1,9 +1,10 @@
 package service
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"
 	"github.com/zlbenjamin/gotextgin/pkg"
@@ -27,7 +28,6 @@ func (params AddTextParams) ConvertToText() sttext.Text {
 func AddText(c *gin.Context) {
 	var params AddTextParams
 	if err := c.ShouldBind(&params); err != nil {
-		fmt.Println("todo err=", err)
 		resp := pkg.ApiResponse{
 			Code:    400,
 			Message: "Bad request",
@@ -40,17 +40,33 @@ func AddText(c *gin.Context) {
 	params.Content = strings.Trim(params.Content, " ")
 	params.Type = strings.Trim(params.Type, " ")
 
-	fmt.Println("todo params=", params)
+	if utf8.RuneCountInString(params.Content) > 10_000 {
+		resp := pkg.ApiResponse{
+			Code:    400,
+			Message: "content: length exceed",
+		}
+		c.JSON(http.StatusBadRequest, resp)
+		return
+	}
+
+	if utf8.RuneCountInString(params.Type) > 10 {
+		resp := pkg.ApiResponse{
+			Code:    400,
+			Message: "type: length exceed",
+		}
+		c.JSON(http.StatusBadRequest, resp)
+		return
+	}
 
 	dml := "INSERT INTO " + sttext.Table_Text + " (content, type) VALUES (?, ?)"
 	id, err := database.AddRecordToTable(dml, params.Content, params.Type)
 	if err != nil {
-		fmt.Println("todo err=", err)
+		log.Println("Add record to table failed. dml=", dml, err.Error())
 		resp := pkg.ApiResponse{
 			Code:    500,
-			Message: "Add failed",
+			Message: "Add text failed",
 		}
-		c.JSON(http.StatusBadRequest, resp)
+		c.JSON(http.StatusInternalServerError, resp)
 		return
 	}
 
@@ -60,5 +76,5 @@ func AddText(c *gin.Context) {
 		Message: "OK",
 		Data:    id,
 	}
-	c.JSON(http.StatusBadRequest, resp)
+	c.JSON(http.StatusOK, resp)
 }
