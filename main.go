@@ -45,13 +45,15 @@ func main() {
 
 	api.InitTextApis(r)
 
+	addr := ":40000"
 	s := &http.Server{
-		Addr:           ":40000",
+		Addr:           addr,
 		Handler:        r,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 2 << 20,
 	}
 
+	log.Println("Start web server at 0.0.0.0" + addr)
 	s.ListenAndServe()
 }
