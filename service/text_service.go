@@ -176,10 +176,10 @@ func DeleteTextById(c *gin.Context) {
 
 // Params of page find
 type pageFindParams struct {
-	PageNo    int32  `json:"pageNo" binding:"required"`
-	PageSize  int32  `json:"pageSize" binding:"required"`
-	KwContent string `json:"kwContent"`
-	Type      string `json:"type"`
+	PageNo    int32  `json:"pageNo" binding:"number,gt=0"`
+	PageSize  int32  `json:"pageSize" binding:"number,gte=1,lte=500"`
+	KwContent string `json:"kwContent" binding:"max=50"`
+	Type      string `json:"type" binding:"max=10"`
 }
 
 // Page find texts.
@@ -187,35 +187,13 @@ type pageFindParams struct {
 func PageFindText(c *gin.Context) {
 	var params pageFindParams
 	if err := c.ShouldBind(&params); err != nil {
-		log.Println("Bind err=", err)
 		resp := pkg.ApiResponse{
 			Code:    400,
-			Message: "Bad request",
+			Message: err.Error(),
 		}
 		c.JSON(http.StatusBadRequest, resp)
 		return
 	}
-
-	// more check
-	if params.PageNo < 1 {
-		resp := pkg.ApiResponse{
-			Code:    400,
-			Message: "pageNo < 1",
-		}
-		c.JSON(http.StatusBadRequest, resp)
-		return
-	}
-	maxSize := int32(500)
-	if params.PageSize < 1 || params.PageSize > maxSize {
-		resp := pkg.ApiResponse{
-			Code:    400,
-			Message: "pageSize: [1, 500]",
-		}
-		c.JSON(http.StatusBadRequest, resp)
-		return
-	}
-
-	// todo
 
 	// 1/2 Query data
 	dql, dqlParams := makeDql(params)
