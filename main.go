@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/zlbenjamin/gotextgin/api"
+	"github.com/zlbenjamin/gotextgin/pkg/middlewares"
 	pkg "github.com/zlbenjamin/gotextgin/pkg/text"
 	"github.com/zlbenjamin/gotextgin/service/database"
 )
@@ -41,7 +42,11 @@ func init() {
 }
 
 func main() {
-	r := gin.Default()
+	r := gin.New()
+
+	r.Use(middlewares.LoggerApi(), middlewares.CustomRecovery())
+
+	r.NoRoute(middlewares.Handle404())
 
 	api.InitTextApis(r)
 
