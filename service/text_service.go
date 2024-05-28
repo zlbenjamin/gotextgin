@@ -1,6 +1,8 @@
 package service
 
 import (
+	"database/sql"
+	"errors"
 	"log"
 	"net/http"
 	"strconv"
@@ -80,6 +82,7 @@ func AddText(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
+// Get a text by id
 func GetTextById(c *gin.Context) {
 	id := c.Param("id")
 	idi, err := strconv.Atoi(id)
@@ -104,7 +107,32 @@ func GetTextById(c *gin.Context) {
 
 	var textData sttext.Text
 
-	// TODO
+	dql := "SELECT * FROM " + sttext.Table_Text + " WHERE id = ?"
+	row := database.GetOneRecrod(dql, idi)
+	if err := row.Scan(
+		&textData.Id,
+		&textData.Content,
+		&textData.Type,
+		&textData.CreateTime,
+		&textData.UpdateTime,
+	); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			resp := pkg.ApiResponse{
+				Code:    400,
+				Message: "No data for id",
+			}
+			c.JSON(http.StatusBadRequest, resp)
+			return
+		}
+
+		log.Println("Query failed: id=", id, "err=", err.Error())
+		resp := pkg.ApiResponse{
+			Code:    500,
+			Message: "Query failed",
+		}
+		c.JSON(http.StatusBadRequest, resp)
+		return
+	}
 
 	resp := pkg.ApiResponse{
 		Code:    200,

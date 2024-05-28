@@ -127,3 +127,8 @@ func AddRecordToTable(dml string, params ...any) (int32, error) {
 	}
 	return int32(id), nil
 }
+
+// Get at most one record
+func GetOneRecrod(dql string, params ...any) *sql.Row {
+	return gsqlDb.QueryRow(dql, params...)
+}
