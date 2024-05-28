@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"
 	"github.com/zlbenjamin/gotextgin/pkg"
@@ -17,8 +16,8 @@ import (
 
 // Params of adding text
 type AddTextParams struct {
-	Content string `json:"content" binding:"required"`
-	Type    string `json:"type"`
+	Content string `json:"content" binding:"required,max=10000"`
+	Type    string `json:"type" binding:"max=10"`
 }
 
 func (params AddTextParams) ConvertToText() sttext.Text {
@@ -34,7 +33,7 @@ func AddText(c *gin.Context) {
 	if err := c.ShouldBind(&params); err != nil {
 		resp := pkg.ApiResponse{
 			Code:    400,
-			Message: "Bad request",
+			Message: err.Error(),
 		}
 		c.JSON(http.StatusBadRequest, resp)
 		return
@@ -43,24 +42,6 @@ func AddText(c *gin.Context) {
 	// trim
 	params.Content = strings.Trim(params.Content, " ")
 	params.Type = strings.Trim(params.Type, " ")
-
-	if utf8.RuneCountInString(params.Content) > 10_000 {
-		resp := pkg.ApiResponse{
-			Code:    400,
-			Message: "content: length exceed",
-		}
-		c.JSON(http.StatusBadRequest, resp)
-		return
-	}
-
-	if utf8.RuneCountInString(params.Type) > 10 {
-		resp := pkg.ApiResponse{
-			Code:    400,
-			Message: "type: length exceed",
-		}
-		c.JSON(http.StatusBadRequest, resp)
-		return
-	}
 
 	dml := "INSERT INTO " + sttext.Table_Text + " (content, type) VALUES (?, ?)"
 	id, err := database.AddRecordToTable(dml, params.Content, params.Type)
