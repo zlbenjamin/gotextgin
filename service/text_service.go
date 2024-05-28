@@ -69,7 +69,6 @@ func GetTextById(c *gin.Context) {
 	id := c.Param("id")
 	idi, err := strconv.Atoi(id)
 	if err != nil {
-		log.Println("todo 1 err=", err)
 		resp := pkg.ApiResponse{
 			Code:    400,
 			Message: "Bad request",
@@ -78,7 +77,6 @@ func GetTextById(c *gin.Context) {
 		return
 	}
 	if idi < 1 {
-		log.Println("todo 2 err=", err)
 		resp := pkg.ApiResponse{
 			Code:    400,
 			Message: "Bad request < 1",
@@ -129,7 +127,6 @@ func DeleteTextById(c *gin.Context) {
 	id := c.Param("id")
 	idi, err := strconv.Atoi(id)
 	if err != nil {
-		log.Println("todo 1 err=", err)
 		resp := pkg.ApiResponse{
 			Code:    400,
 			Message: "Bad request",
@@ -138,7 +135,6 @@ func DeleteTextById(c *gin.Context) {
 		return
 	}
 	if idi < 1 {
-		log.Println("todo 2 err=", err)
 		resp := pkg.ApiResponse{
 			Code:    400,
 			Message: "Bad request < 1",
