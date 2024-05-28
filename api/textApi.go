@@ -11,18 +11,20 @@ const apiGroupText = "/api/text"
 func InitTextApis(r *gin.Engine) {
 	textGroup := r.Group(apiGroupText)
 	textGroup.POST("add", AddText)
+	textGroup.GET(":id", GetTextById)
+	textGroup.DELETE(":id", DeleteTextById)
 }
 
 func AddText(c *gin.Context) {
 	service.AddText(c)
 }
 
-func DeleteTextById(c *gin.Context) {
-	// TODO
+func GetTextById(c *gin.Context) {
+	service.GetTextById(c)
 }
 
-func GetTextById(c *gin.Context) {
-	// TODO
+func DeleteTextById(c *gin.Context) {
+	service.DeleteTextById(c)
 }
 
 func PageFindText(c *gin.Context) {

@@ -3,6 +3,7 @@ package service
 import (
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"unicode/utf8"
 
@@ -75,6 +76,72 @@ func AddText(c *gin.Context) {
 		Code:    200,
 		Message: "OK",
 		Data:    id,
+	}
+	c.JSON(http.StatusOK, resp)
+}
+
+func GetTextById(c *gin.Context) {
+	id := c.Param("id")
+	idi, err := strconv.Atoi(id)
+	if err != nil {
+		log.Println("todo 1 err=", err)
+		resp := pkg.ApiResponse{
+			Code:    400,
+			Message: "Bad request",
+		}
+		c.JSON(http.StatusBadRequest, resp)
+		return
+	}
+	if idi < 1 {
+		log.Println("todo 2 err=", err)
+		resp := pkg.ApiResponse{
+			Code:    400,
+			Message: "Bad request < 1",
+		}
+		c.JSON(http.StatusBadRequest, resp)
+		return
+	}
+
+	var textData sttext.Text
+
+	// TODO
+
+	resp := pkg.ApiResponse{
+		Code:    200,
+		Message: "OK",
+		Data:    textData,
+	}
+	c.JSON(http.StatusOK, resp)
+}
+
+func DeleteTextById(c *gin.Context) {
+	id := c.Param("id")
+	idi, err := strconv.Atoi(id)
+	if err != nil {
+		log.Println("todo 1 err=", err)
+		resp := pkg.ApiResponse{
+			Code:    400,
+			Message: "Bad request",
+		}
+		c.JSON(http.StatusBadRequest, resp)
+		return
+	}
+	if idi < 1 {
+		log.Println("todo 2 err=", err)
+		resp := pkg.ApiResponse{
+			Code:    400,
+			Message: "Bad request < 1",
+		}
+		c.JSON(http.StatusBadRequest, resp)
+		return
+	}
+
+	// TODO
+
+	resp := pkg.ApiResponse{
+		Code:    200,
+		Message: "OK",
+		Data:    true,
 	}
 	c.JSON(http.StatusOK, resp)
 }
