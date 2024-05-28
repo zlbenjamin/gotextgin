@@ -30,3 +30,6 @@ success.
 
 - curl -X DELETE http://localhost:40000/api/text/3  
 {"code":200,"message":"OK","data":true}  
+
+## POST /api/text/page
+- curl -X POST http://localhost:40000/api/text/page  -H "Content-Type: application/json" -d "{\"pageNo\": 1, \"pageSize\":10}"  

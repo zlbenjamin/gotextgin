@@ -13,6 +13,7 @@ func InitTextApis(r *gin.Engine) {
 	textGroup.POST("add", AddText)
 	textGroup.GET(":id", GetTextById)
 	textGroup.DELETE(":id", DeleteTextById)
+	textGroup.POST("page", PageFindText)
 }
 
 func AddText(c *gin.Context) {
@@ -28,5 +29,5 @@ func DeleteTextById(c *gin.Context) {
 }
 
 func PageFindText(c *gin.Context) {
-	// TODO
+	service.PageFindText(c)
 }

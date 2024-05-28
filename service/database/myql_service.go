@@ -142,3 +142,8 @@ func DeleteRecordByPk(dml string, pk any) (int64, error) {
 	}
 	return ret.RowsAffected()
 }
+
+// Query data, 0+
+func QueryDataList(dql string, params ...any) (*sql.Rows, error) {
+	return gsqlDb.Query(dql, params...)
+}
