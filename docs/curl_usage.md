@@ -24,4 +24,9 @@ success.
 - curl http://localhost:40000/api/text/3  
 {"code":200,"message":"OK","data":{}}
 
+## DELETE /api/text/:id
+- curl -X DELETE http://localhost:40000/api/text/2  
+{"code":200,"message":"Do nothing","data":true}  
 
+- curl -X DELETE http://localhost:40000/api/text/3  
+{"code":200,"message":"OK","data":true}  

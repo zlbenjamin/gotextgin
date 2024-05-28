@@ -132,3 +132,13 @@ func AddRecordToTable(dml string, params ...any) (int32, error) {
 func GetOneRecrod(dql string, params ...any) *sql.Row {
 	return gsqlDb.QueryRow(dql, params...)
 }
+
+// Delete a record
+// Return RowsAffected()
+func DeleteRecordByPk(dml string, pk any) (int64, error) {
+	ret, err := gsqlDb.Exec(dml, pk)
+	if err != nil {
+		fmt.Println("err=", err)
+	}
+	return ret.RowsAffected()
+}

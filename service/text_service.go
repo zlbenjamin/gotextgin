@@ -142,6 +142,7 @@ func GetTextById(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
+// Delete a text by id
 func DeleteTextById(c *gin.Context) {
 	id := c.Param("id")
 	idi, err := strconv.Atoi(id)
@@ -164,12 +165,29 @@ func DeleteTextById(c *gin.Context) {
 		return
 	}
 
-	// TODO
+	// Exec
+	dml := `DELETE FROM ` + sttext.Table_Text + ` WHERE id = ?`
+	var num int64
+	if num, err = database.DeleteRecordByPk(dml, idi); err != nil {
+		log.Println("Delete text failed: id=", id, "err=", err)
+		resp := pkg.ApiResponse{
+			Code:    500,
+			Message: "Delete failed",
+		}
+		c.JSON(http.StatusOK, resp)
+	}
 
 	resp := pkg.ApiResponse{
 		Code:    200,
 		Message: "OK",
 		Data:    true,
 	}
+
+	if num > 0 {
+		log.Println("Delete text success. id=", id)
+	} else {
+		resp.Message = "Do nothing"
+	}
+
 	c.JSON(http.StatusOK, resp)
 }
