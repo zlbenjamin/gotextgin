@@ -7,6 +7,9 @@ set godbhost=127.0.0.1
 set godbport=3306  
 set godbname=dbname  
 
+### env for gorm pool
+set gomysqlConfig=d:\\run\\dbconfig.json  
+
 ## Windows Power Shell
 TODO  
 
