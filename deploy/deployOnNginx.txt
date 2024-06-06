@@ -1,0 +1,34 @@
+# 240606 
+
+1.Install a nginx
+
+2.Modify the config of nginx
+
+2.1.Server
+localhost.conf:
+# point to the vue project
+root         D:/code/1.github/gotextgin/web/vuetext/dist;
+# location
+location ^~ /api/text {
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   Host      $http_host;
+        proxy_set_header X-NginX-Proxy true;
+
+        proxy_pass http://serverText;
+}
+
+2.2.serverText
+upstream serverText {
+        server localhost:40000;
+}
+
+3.Build the vue project
+$ npm run build 
+Before this, make sure the project was initilized.
+
+4.Start go project 
+$ go run .
+
+5.Start Nginx 
+After nginx started, access the http://localhost .
