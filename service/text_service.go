@@ -15,19 +15,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// Params of adding text
-type AddTextParams struct {
-	Content string `json:"content" binding:"required,max=10000"`
-	Type    string `json:"type" binding:"max=10"`
-}
-
-func (params AddTextParams) ConvertToText() sttext.Text {
-	var ret sttext.Text
-	ret.Content = params.Content
-	ret.Type = params.Type
-	return ret
-}
-
 // Add a text
 func AddText(c *gin.Context) {
 	var params AddTextParams
@@ -169,14 +156,6 @@ func DeleteTextById(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, resp)
-}
-
-// Params of page find
-type pageFindParams struct {
-	PageNo    int32  `json:"pageNo" binding:"number,gt=0"`
-	PageSize  int32  `json:"pageSize" binding:"number,gte=1,lte=500"`
-	KwContent string `json:"kwContent" binding:"max=50"`
-	Type      string `json:"type" binding:"max=10"`
 }
 
 // Page find texts.

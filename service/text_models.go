@@ -1,5 +1,31 @@
 package service
 
+import sttext "github.com/zlbenjamin/gotextgin/pkg/text"
+
+// --- comment ---
+
+// Params of adding text
+type AddTextParams struct {
+	Content string `json:"content" binding:"required,max=10000"`
+	Type    string `json:"type" binding:"max=10"`
+}
+
+// Convert params to record
+func (params AddTextParams) ConvertToText() sttext.Text {
+	var ret sttext.Text
+	ret.Content = params.Content
+	ret.Type = params.Type
+	return ret
+}
+
+// Params of page find
+type pageFindParams struct {
+	PageNo    int32  `json:"pageNo" binding:"number,gt=0"`
+	PageSize  int32  `json:"pageSize" binding:"number,gte=1,lte=500"`
+	KwContent string `json:"kwContent" binding:"max=50"`
+	Type      string `json:"type" binding:"max=10"`
+}
+
 // --- comment ---
 
 // Params of adding text comment
