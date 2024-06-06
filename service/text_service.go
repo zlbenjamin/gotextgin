@@ -34,33 +34,43 @@ func AddText(c *gin.Context) {
 		params.Tags[i] = strings.Trim(item, " ")
 	}
 
-	dml := "INSERT INTO " + sttext.Table_Text + " (content, type) VALUES (?, ?)"
-	id, err := database.AddRecordToTable(dml, params.Content, params.Type)
-	if err != nil {
-		log.Println("Add record to table failed. dml=", dml, err.Error())
-		resp := pkg.ApiResponse{
-			Code:    500,
-			Message: "Add text failed",
-		}
-		c.JSON(http.StatusInternalServerError, resp)
-		return
-	}
+	var retId int32
 
-	// add tags
-	addTagsForText(id, params.Tags)
+	// operations in a transaction
+	db := database.GetDB()
+	db.Transaction(func(tx *gorm.DB) error {
+		// 1/2 add text
+		record := &sttext.Text{
+			Content: params.Content,
+			Type:    params.Type,
+		}
+		result := tx.Create(record)
+		if result.Error != nil {
+			log.Println("Add text failed")
+			return result.Error
+		}
+		log.Println("Add text success. id=", record.Id)
+
+		// 2/2 add tags
+		addTagsForText(tx, record.Id, params.Tags)
+
+		retId = record.Id
+		return nil
+	})
 
 	// Success.
 	resp := pkg.ApiResponse{
 		Code:    200,
 		Message: "OK",
-		Data:    id,
+		Data:    retId,
 	}
 	c.JSON(http.StatusOK, resp)
 }
 
-func addTagsForText(id int32, tags []string) {
+// func addTagsForText(id int32, tags []string) {
+func addTagsForText(tx *gorm.DB, id int32, tags []string) error {
 	if len(tags) < 1 {
-		return
+		return nil
 	}
 
 	var records []*sttext.TextTag
@@ -71,13 +81,16 @@ func addTagsForText(id int32, tags []string) {
 		})
 	}
 
-	db := database.GetDB()
-	result := db.Create(records)
+	// db := database.GetDB()
+	// result := db.Create(records)
+	result := tx.Create(records)
 	if result.Error != nil {
 		log.Panicln("Add tags for text failed, id=", id, ", tags=", tags, "err=", result.Error.Error())
+		return result.Error
 	}
 
 	log.Println("Add tags for text success, id=", id)
+	return nil
 }
 
 // Get a text by id
