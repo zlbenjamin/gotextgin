@@ -59,9 +59,39 @@ function fillListAfterClear(target, source) {
     }
 }
 
+function handleSizeChange(num) {
+    pageFindForm.pageSize = num
+    needUpdate.value++
+}
+function handleCurrentChange(num) {
+    pageFindForm.pageNo = num
+    needUpdate.value++
+}
+
+
+const needUpdate = ref(0)
+watch(needUpdate, (val) => {
+    pageFind()
+})
+
 </script>
 
 <template>
+<div style="display: flex; justify-content: center; align-items: center;">
+                <el-pagination
+                    style=""
+                    v-model:current-page="pfPageNo"
+                    v-model:page-size="pfPageSize"
+                    :page-sizes="[10, 25, 50, 100]"
+                    :small="small"
+                    :disabled="disabled"
+                    :background="background"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="pfTotal"
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    />
+            </div>
 <div v-for="(item,index) in pageFindList" class="content-in-list" :class="{
         'content-in-list-0':(index%2 == 0),
         'content-in-list-1':(index%2 == 1)
