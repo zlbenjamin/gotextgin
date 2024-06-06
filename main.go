@@ -63,7 +63,8 @@ func init() {
 func main() {
 	r := gin.New()
 
-	r.Use(middlewares.LoggerApi(), middlewares.CustomRecovery())
+	// r.Use(middlewares.LoggerApi(), middlewares.CustomRecovery())
+	r.Use(middlewares.LoggerApi(), gin.Recovery())
 
 	r.NoRoute(middlewares.Handle404())
 
