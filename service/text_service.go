@@ -340,3 +340,40 @@ func pageFindTotal(params pageFindParams) (total int64) {
 
 	return
 }
+
+// ---comment---
+
+// Add a comment for a text
+func AddTextComment(c *gin.Context) {
+	var params AddTextCommentParams
+	if err := c.ShouldBind(&params); err != nil {
+		resp := pkg.ApiResponse{
+			Code:    400,
+			Message: err.Error(),
+		}
+		c.JSON(http.StatusBadRequest, resp)
+		return
+	}
+
+	record := &sttext.TextComment{
+		TextId:  params.TextId,
+		Comment: params.Comment,
+	}
+
+	database.AddOneRecord(record)
+	id := record.Id
+	log.Println("Add comment success. id=", id)
+
+	// Success.
+	resp := pkg.ApiResponse{
+		Code:    200,
+		Message: "OK",
+		Data:    id,
+	}
+	c.JSON(http.StatusOK, resp)
+}
+
+// Delete a comment
+func DeleteTextCommentById(c *gin.Context) {
+
+}
