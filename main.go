@@ -41,6 +41,22 @@ func init() {
 	log.Println("Create table: ", pkg.Table_Text, "success.")
 }
 
+// create or update tables with gorm
+func init() {
+	db := database.GetDB()
+	err := db.AutoMigrate(&pkg.TextComment{})
+	if err != nil {
+		log.Panicln("create table text_comment failed:", err.Error())
+	}
+	log.Println("create table text_comment success.")
+
+	err = db.AutoMigrate(&pkg.TextTag{})
+	if err != nil {
+		log.Panicln("create table text_tag failed:", err.Error())
+	}
+	log.Println("create table text_tag success.")
+}
+
 func main() {
 	r := gin.New()
 
