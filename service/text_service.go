@@ -30,6 +30,9 @@ func AddText(c *gin.Context) {
 	// trim
 	params.Content = strings.Trim(params.Content, " ")
 	params.Type = strings.Trim(params.Type, " ")
+	for i, item := range params.Tags {
+		params.Tags[i] = strings.Trim(item, " ")
+	}
 
 	dml := "INSERT INTO " + sttext.Table_Text + " (content, type) VALUES (?, ?)"
 	id, err := database.AddRecordToTable(dml, params.Content, params.Type)
@@ -43,6 +46,9 @@ func AddText(c *gin.Context) {
 		return
 	}
 
+	// add tags
+	addTagsForText(id, params.Tags)
+
 	// Success.
 	resp := pkg.ApiResponse{
 		Code:    200,
@@ -50,6 +56,28 @@ func AddText(c *gin.Context) {
 		Data:    id,
 	}
 	c.JSON(http.StatusOK, resp)
+}
+
+func addTagsForText(id int32, tags []string) {
+	if len(tags) < 1 {
+		return
+	}
+
+	var records []*sttext.TextTag
+	for _, item := range tags {
+		records = append(records, &sttext.TextTag{
+			TextId: id,
+			Name:   item,
+		})
+	}
+
+	db := database.GetDB()
+	result := db.Create(records)
+	if result.Error != nil {
+		log.Panicln("Add tags for text failed, id=", id, ", tags=", tags, "err=", result.Error.Error())
+	}
+
+	log.Println("Add tags for text success, id=", id)
 }
 
 // Get a text by id
