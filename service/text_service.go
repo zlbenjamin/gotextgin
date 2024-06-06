@@ -375,5 +375,39 @@ func AddTextComment(c *gin.Context) {
 
 // Delete a comment
 func DeleteTextCommentById(c *gin.Context) {
+	var params1 DelTextCommentParams
+	if err := c.ShouldBindUri(&params1); err != nil {
+		resp := pkg.ApiResponse{
+			Code:    400,
+			Message: "Invalid id",
+			Data:    err.Error(),
+		}
+		c.JSON(http.StatusBadRequest, resp)
+		return
+	}
 
+	var tc sttext.TextComment
+	ra, err := database.DeleteOneRecordByPk(&tc, params1.Id)
+	if err != nil {
+		log.Println("Delete comment failed. id=", params1.Id, "err=", err.Error())
+		resp := pkg.ApiResponse{
+			Code:    500,
+			Message: "Delete error",
+			Data:    err.Error(),
+		}
+		c.JSON(http.StatusBadRequest, resp)
+		return
+	}
+
+	if ra > 0 {
+		log.Println("Delete comment success. id=", params1.Id, "RowsAffected=", ra)
+	}
+
+	// Success.
+	resp := pkg.ApiResponse{
+		Code:    200,
+		Message: "OK",
+		Data:    true,
+	}
+	c.JSON(http.StatusOK, resp)
 }
