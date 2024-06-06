@@ -12,6 +12,7 @@ import (
 	"github.com/zlbenjamin/gotextgin/pkg"
 	sttext "github.com/zlbenjamin/gotextgin/pkg/text"
 	"github.com/zlbenjamin/gotextgin/service/database"
+	"gorm.io/gorm"
 )
 
 // Params of adding text
@@ -355,6 +356,27 @@ func AddTextComment(c *gin.Context) {
 		return
 	}
 
+	// Check if the text exists.
+	var trec sttext.Text
+	_, err := database.GetRecordByPk(&trec, params.TextId)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		resp := pkg.ApiResponse{
+			Code:    400,
+			Message: "No text with this id",
+		}
+		c.JSON(http.StatusBadRequest, resp)
+		return
+	} else if err != nil {
+		log.Println("Add comment failed: err=", err.Error(), ", params=", params)
+		resp := pkg.ApiResponse{
+			Code:    500,
+			Message: "Server error",
+			Data:    err.Error(),
+		}
+		c.JSON(http.StatusInternalServerError, resp)
+		return
+	}
+
 	record := &sttext.TextComment{
 		TextId:  params.TextId,
 		Comment: params.Comment,
@@ -362,7 +384,7 @@ func AddTextComment(c *gin.Context) {
 
 	database.AddOneRecord(record)
 	id := record.Id
-	log.Println("Add comment success. id=", id)
+	log.Println("Add comment success. id=", id, ", textId=", params.TextId)
 
 	// Success.
 	resp := pkg.ApiResponse{
