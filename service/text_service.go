@@ -20,7 +20,7 @@ func AddText(c *gin.Context) {
 	var params AddTextParams
 	if err := c.ShouldBind(&params); err != nil {
 		resp := pkg.ApiResponse{
-			Code:    400,
+			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		}
 		c.JSON(http.StatusBadRequest, resp)

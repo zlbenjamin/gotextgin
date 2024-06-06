@@ -1,13 +1,46 @@
 package service
 
-import sttext "github.com/zlbenjamin/gotextgin/pkg/text"
+import (
+	"strings"
+
+	"github.com/go-playground/validator/v10"
+	sttext "github.com/zlbenjamin/gotextgin/pkg/text"
+)
 
 // --- comment ---
 
 // Params of adding text
 type AddTextParams struct {
-	Content string `json:"content" binding:"required,max=10000"`
-	Type    string `json:"type" binding:"max=10"`
+	Content string   `json:"content" binding:"required,max=10000"`
+	Type    string   `json:"type" binding:"max=10"`
+	Tags    []string `json:"tags" binding:"checktags"`
+}
+
+// check tags
+// length <= 5, duplicate, blank tag
+func CheckTags(fl validator.FieldLevel) bool {
+	data, ok := fl.Field().Interface().([]string)
+	if ok {
+		if len(data) > 5 {
+			return false
+		}
+
+		tagMap := make(map[string]bool, len(data))
+		for _, item := range data {
+			item = strings.Trim(item, " ")
+			if item == "" {
+				return false
+			}
+			if tagMap[item] {
+				return false
+
+			} else {
+				tagMap[item] = true
+			}
+		}
+	}
+
+	return true
 }
 
 // Convert params to record

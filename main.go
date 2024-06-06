@@ -6,10 +6,13 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/zlbenjamin/gotextgin/api"
 	"github.com/zlbenjamin/gotextgin/pkg/middlewares"
 	pkg "github.com/zlbenjamin/gotextgin/pkg/text"
+	"github.com/zlbenjamin/gotextgin/service"
 	"github.com/zlbenjamin/gotextgin/service/database"
 )
 
@@ -63,6 +66,12 @@ func main() {
 	r.Use(middlewares.LoggerApi(), middlewares.CustomRecovery())
 
 	r.NoRoute(middlewares.Handle404())
+
+	// custom validators
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		log.Println("Register validators...")
+		v.RegisterValidation("checktags", service.CheckTags)
+	}
 
 	api.InitTextApis(r)
 
