@@ -70,13 +70,19 @@ func initMySql(setting *config.Database) {
 func GetDB() *gorm.DB {
 	sqlDB, err := db.DB()
 	if err != nil {
-		log.Println("Connect db server failed. err=", err.Error())
+		log.Panicln("Connect db server failed. err=", err.Error())
 	}
 
 	if err = sqlDB.Ping(); err != nil {
-		log.Println("Ping db servr failed. err=", err.Error())
+		log.Panicln("Ping db servr failed. err=", err.Error())
 		sqlDB.Close()
 	}
 
 	return db
+}
+
+// Add a record
+func AddOneRecord[T any](record T) {
+	db := GetDB()
+	db.Create(record)
 }
