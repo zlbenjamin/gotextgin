@@ -107,34 +107,7 @@ function addMsg() {
     }
 
     // tags0 to addForm.tags
-    if (tags0.value.length > 0) {
-        // pre: Replace consecutive spaces
-        let re = new RegExp(" +", "g")
-        tags0.value = tags0.value.replaceAll(re, ' ')
-        tags0.value = tags0.value.trim()
-
-        let arr = tags0.value.split(' ')
-        if (arr.length > 5) {
-            ElMessage.warning('At most 5 tags.');
-            // focus again
-            // todo
-            return
-        }
-        if (arr.length > 0) {
-            // fill addForm.tags
-            // pre: clear addForm.tags
-            for (let i=0; i<arr.length; i++) {
-                let item = arr[i].trim()
-                if (item.length > 10) {
-                    ElMessage.warning('Max length of a tag: 10 characters.');
-                    // focus again
-                    // todo
-                    return
-                }
-                addForm.tags.push(item)
-            }
-        }
-    }
+    fillTagsArray(tags0.value, addForm.tags)
 
     // send request
     let url = gurls.text.add
@@ -208,7 +181,6 @@ function fillTagsArray(str, targetArr) {
             return
         }
         if (arr.length > 0) {
-            console.log(33)
             // fill targetArr
             // pre: clear targetArr
             for (let i=0; i<arr.length; i++) {
@@ -219,7 +191,6 @@ function fillTagsArray(str, targetArr) {
                     // todo
                     return
                 }
-                console.log(33)
                 targetArr.push(item)
             }
         }
