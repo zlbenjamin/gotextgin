@@ -39,7 +39,7 @@ const pfTotalPage = ref(0)
 const pageFindList = reactive([])
 
 function pageFind() {
-    let url = '/api/text/page'
+    let url = gurls.text.page
     axios.post(url, pageFindForm)
     .then(function(response){
         let result = response.data;
@@ -84,6 +84,7 @@ function handleCurrentChange(num) {
 }
 
 // Add a text
+const showAdd = ref(false)
 
 const tags0 = ref('')
 const addForm = reactive({
@@ -111,7 +112,6 @@ function addMsg() {
 
         let arr = tags0.value.split(' ')
         if (arr.length > 5) {
-            console.log(arr)
             ElMessage.warning('At most 5 tags.');
             // focus again
             // todo
@@ -132,8 +132,6 @@ function addMsg() {
             }
         }
     }
-
-    console.log("addForm=" + JSON.stringify(addForm))
 
     // send request
     let url = gurls.text.add
@@ -164,8 +162,10 @@ function clearAddForm() {
     addForm.content = ''
     // addForm.tags
     addForm.tags.splice(0, addForm.tags.length)
-    console.log(addForm)
 }
+
+// more search conditions
+const showSearch = ref(false)
 
 const needUpdate = ref(0)
 watch(needUpdate, (val) => {
@@ -176,6 +176,10 @@ watch(needUpdate, (val) => {
 
 <template>
     <div>
+        <el-button type="primary" @click="showAdd = !showAdd">Add</el-button>
+        <el-button type="success" @click="showSearch = !showSearch">Search</el-button>
+    </div>
+    <div v-show="showAdd">
         <el-form :model="addForm" label-width="auto" style="max-width: 600px">
             <el-form-item label="">
                 <el-input v-model.trim="addForm.type" 
@@ -204,6 +208,9 @@ watch(needUpdate, (val) => {
                 <el-button type="primary" @click="addMsg">Submit</el-button>
             </el-form-item>
         </el-form>
+    </div>
+    <div v-show="showSearch">
+        <h2>Search form todo</h2>
     </div>
 <div style="display: flex; justify-content: center; align-items: center;">
                 <el-pagination
