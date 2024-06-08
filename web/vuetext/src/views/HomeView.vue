@@ -172,6 +172,45 @@ watch(needUpdate, (val) => {
     pageFind()
 })
 
+// Process content of a text
+function processTextContent(content) {
+    if (Object.is(content, null) || Object.is(content, undefined)) {
+        return '';
+    }
+
+    let pcontent = content
+    pcontent = htmlEncode(pcontent)
+
+    // replace \n
+    pcontent = pcontent.replaceAll("\n", "<br>");
+
+    // replace url in content
+    // Note, there are some bugs TODO
+    let urlg = new RegExp("http[s]://[a-zA-Z0-9\.\?/#=_:\\-\\+%]+", "ig");
+    pcontent = pcontent.replaceAll(urlg, replaceUrl)
+
+    return pcontent
+}
+
+// HTML special characters
+function htmlEncode(content) {
+    content = content.replaceAll("&", "&amp;");
+			
+    content = content.replaceAll("<", "&lt;");
+    content = content.replaceAll(">", "&gt;");
+    content = content.replaceAll("\"", "&quot;");
+    content = content.replaceAll(" ", "&nbsp;");
+
+    content = content.replaceAll("\t", "&emsp;");
+
+    return content
+}
+
+// Replace matched url with <a> element
+function replaceUrl(url) {
+    return "<a href='" + url + "' target='_blank' class='content-url' >" + decodeURI(url) + "</a>"
+}
+
 </script>
 
 <template>
@@ -232,7 +271,7 @@ watch(needUpdate, (val) => {
         'content-in-list-1':(index%2 == 1)
     }">
     <span class="tf tf-id">{{ item.id }}</span>
-    <span class="tf tf-content">{{ item.content }}</span>
+    <div v-html="processTextContent(item.content)" class="tf tf-content"></div>
     <span class="tf tf-type">#{{ item.type }}</span>
     <span class="tf tf-time">{{ item.createTime }}</span>
 </div>
