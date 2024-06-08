@@ -104,8 +104,14 @@ function addMsg() {
 
     // tags0 to addForm.tags
     if (tags0.value.length > 0) {
+        // pre: Replace consecutive spaces
+        var re = new RegExp(" +", "g")
+        tags0.value = tags0.value.replaceAll(re, ' ')
+        tags0.value = tags0.value.trim()
+
         let arr = tags0.value.split(' ')
         if (arr.length > 5) {
+            console.log(arr)
             ElMessage.warning('At most 5 tags.');
             // focus again
             // todo
@@ -113,6 +119,7 @@ function addMsg() {
         }
         if (arr.length > 0) {
             // fill addForm.tags
+            // pre: clear addForm.tags
             for (let i=0; i<arr.length; i++) {
                 let item = arr[i].trim()
                 if (item.length > 10) {
@@ -133,7 +140,6 @@ function addMsg() {
     axios.post(url, addForm)
     .then(function(response){
         let result = response.data;
-        console.log(result) // todo
         if (result.code != grespOk) {
             ElMessage.warning('Add failed: ' + result.message);
             return;
@@ -142,12 +148,23 @@ function addMsg() {
         ElMessage.success('Add success🎈');
         needUpdate.value++
 
-        // clearAddForm()
+        clearAddForm()
     })
     .catch(function(error) {
         console.error(error);
         ElMessage.error('Add error: ' + error.message);
     });
+}
+
+// Clearn add form after add success
+function clearAddForm() {
+    tags0.value = ''
+
+    addForm.type = ''
+    addForm.content = ''
+    // addForm.tags
+    addForm.tags.splice(0, addForm.tags.length)
+    console.log(addForm)
 }
 
 const needUpdate = ref(0)
