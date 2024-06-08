@@ -25,6 +25,7 @@ const grespOk = 200
 
 // Paging
 
+// request data
 const pageFindForm = reactive({
     pageNo: 1,
     pageSize: 10,
@@ -33,6 +34,7 @@ const pageFindForm = reactive({
     tags: []
 })
 
+// response data
 const pfPageNo = ref(1)
 const pfPageSize = ref(10)
 const pfTotal = ref(0)
@@ -107,7 +109,7 @@ function addMsg() {
     // tags0 to addForm.tags
     if (tags0.value.length > 0) {
         // pre: Replace consecutive spaces
-        var re = new RegExp(" +", "g")
+        let re = new RegExp(" +", "g")
         tags0.value = tags0.value.replaceAll(re, ' ')
         tags0.value = tags0.value.trim()
 
@@ -170,16 +172,63 @@ const showSearch = ref(false)
 
 const searchTags0 = ref('')
 const searchForm = reactive({
+    // trimmed
     type: '',
+    // not trimmed
     kwContent: '',
+    // parsed from searchTags0
     tags: []
 })
 
 // Start a search
 // replace fields in 
 function startSearch() {
-    console.log(searchTags0.value)
-    console.log(searchForm)
+    pageFindForm.type = searchForm.type
+
+    pageFindForm.kwContent = searchForm.kwContent
+    
+    fillTagsArray(searchTags0.value, pageFindForm.tags)
+
+    needUpdate.value++
+}
+
+function fillTagsArray(str, targetArr) {
+    // str to targetArr
+    if (str.length > 0) {
+        // pre: Replace consecutive spaces
+        let re = new RegExp(" +", "g")
+        str = str.replaceAll(re, ' ')
+        str = str.trim()
+
+        let arr = str.split(' ')
+        if (arr.length > 5) {
+            ElMessage.warning('At most 5 tags.');
+            // focus again
+            // todo
+            return
+        }
+        if (arr.length > 0) {
+            console.log(33)
+            // fill targetArr
+            // pre: clear targetArr
+            for (let i=0; i<arr.length; i++) {
+                let item = arr[i].trim()
+                if (item.length > 10) {
+                    ElMessage.warning('Max length of a tag: 10 characters.');
+                    // focus again
+                    // todo
+                    return
+                }
+                console.log(33)
+                targetArr.push(item)
+            }
+        }
+    } else {
+        // clear old values
+        if (targetArr.length > 0) {
+            targetArr.splice(0, target.length)
+        }
+    }
 }
 
 
@@ -274,7 +323,7 @@ function replaceUrl(url) {
                     clearable />
             </el-form-item>
             <el-form-item label="">
-                <el-input v-model.trim="searchForm.kwContent" 
+                <el-input v-model="searchForm.kwContent" 
                     placeholder="Key word of the content"
                     minlength="1" maxlength="20" show-word-limit
                     clearable />
