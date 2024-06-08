@@ -8,6 +8,20 @@ onMounted(() => {
     pageFind()
 })
 
+const gurls = {
+    text: {
+        add: '/api/text/add',
+        get: '/api/text/:id',
+        del: '/api/text/:id',
+        page: '/api/text/page',
+    },
+    comment: {
+        add: '/api/text/comment/add',
+        del: '/api/text/comment/:id'
+    }
+}
+
+const grespOk = 200
 
 // Paging
 
@@ -29,7 +43,8 @@ function pageFind() {
     axios.post(url, pageFindForm)
     .then(function(response){
         let result = response.data;
-        console.log(result)
+
+        // todo check result
         
         pfPageNo.value = result.data.pageNo;
         pfPageSize.value = result.data.pageSize;
@@ -68,6 +83,72 @@ function handleCurrentChange(num) {
     needUpdate.value++
 }
 
+// Add a text
+
+const tags0 = ref('')
+const addForm = reactive({
+    type:'',
+    content: '',
+    tags: []
+})
+
+function addMsg() {
+    // validate
+    addForm.content = addForm.content.trim()
+    if (Object.is(addForm.content, '')) {
+        ElMessage.warning('Content is blank.');
+        // focus again
+        // todo
+        return
+    }
+
+    // tags0 to addForm.tags
+    if (tags0.value.length > 0) {
+        let arr = tags0.value.split(' ')
+        if (arr.length > 5) {
+            ElMessage.warning('At most 5 tags.');
+            // focus again
+            // todo
+            return
+        }
+        if (arr.length > 0) {
+            // fill addForm.tags
+            for (let i=0; i<arr.length; i++) {
+                let item = arr[i].trim()
+                if (item.length > 10) {
+                    ElMessage.warning('Max length of a tag: 10 characters.');
+                    // focus again
+                    // todo
+                    return
+                }
+                addForm.tags.push(item)
+            }
+        }
+    }
+
+    console.log("addForm=" + JSON.stringify(addForm))
+
+    // send request
+    let url = gurls.text.add
+    axios.post(url, addForm)
+    .then(function(response){
+        let result = response.data;
+        console.log(result) // todo
+        if (result.code != grespOk) {
+            ElMessage.warning('Add failed: ' + result.message);
+            return;
+        }
+
+        ElMessage.success('Add success🎈');
+        needUpdate.value++
+
+        // clearAddForm()
+    })
+    .catch(function(error) {
+        console.error(error);
+        ElMessage.error('Add error: ' + error.message);
+    });
+}
 
 const needUpdate = ref(0)
 watch(needUpdate, (val) => {
@@ -77,6 +158,36 @@ watch(needUpdate, (val) => {
 </script>
 
 <template>
+    <div>
+        <el-form :model="addForm" label-width="auto" style="max-width: 600px">
+            <el-form-item label="">
+                <el-input v-model.trim="addForm.type" 
+                    class="el-input-width-16"
+                    minlength="1" maxlength="10" show-word-limit
+                    clearable />
+            </el-form-item>
+            <el-form-item label="">
+                <el-input v-model="addForm.content"
+                type="textarea"
+                placeholder="Input content here"
+                autocomplete="off"
+                :rows="20"
+                maxlength="10000"
+                show-word-limit
+                @keyup.ctrl.enter="addMsg"
+                />
+            </el-form-item>
+            <el-form-item>
+                <el-input v-model="tags0" 
+                    placeholder="Tags separated by spaces"
+                    maxlength="55" show-word-limit
+                    clearable />
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="addMsg">Submit</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
 <div style="display: flex; justify-content: center; align-items: center;">
                 <el-pagination
                     style=""
