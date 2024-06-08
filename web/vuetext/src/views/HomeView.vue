@@ -45,23 +45,26 @@ function pageFind() {
     let url = gurls.text.page
     axios.post(url, pageFindForm)
     .then(function(response){
-        let result = response.data;
+        let result = response.data
+        if (result.code != grespOk) {
+            console.error("Paging failed:" + JSON.stringify(result))
+            ElMessage.warning('Paging failed: ' + result.message)
+            return
+        }
 
-        // todo check result
-        
-        pfPageNo.value = result.data.pageNo;
-        pfPageSize.value = result.data.pageSize;
-        pfTotal.value = result.data.total;
-        pfTotalPage.value = result.data.totalPage;
+        pfPageNo.value = result.data.pageNo
+        pfPageSize.value = result.data.pageSize
+        pfTotal.value = result.data.total
+        pfTotalPage.value = result.data.totalPage
 
         // // TextView-BIvkEUqG.js:2 TypeError: Assignment to constant variable.
-        // // pageFindList = result.data.list;
+        // // pageFindList = result.data.list
         fillListAfterClear(pageFindList, result.data.list)
     })
     .catch(function(error) {
-        console.error(error);
-        ElMessage.error('error: ' + error.message);
-    });
+        console.error(error)
+        ElMessage.error('error: ' + error.message)
+    })
 }
 
 function fillListAfterClear(target, source) {
@@ -100,7 +103,7 @@ function addMsg() {
     // validate
     addForm.content = addForm.content.trim()
     if (Object.is(addForm.content, '')) {
-        ElMessage.warning('Content is blank.');
+        ElMessage.warning('Content is blank.')
         // focus again
         // todo
         return
@@ -113,21 +116,21 @@ function addMsg() {
     let url = gurls.text.add
     axios.post(url, addForm)
     .then(function(response){
-        let result = response.data;
+        let result = response.data
         if (result.code != grespOk) {
-            ElMessage.warning('Add failed: ' + result.message);
-            return;
+            ElMessage.warning('Add failed: ' + result.message)
+            return
         }
 
-        ElMessage.success('Add success🎈');
+        ElMessage.success('Add success🎈')
         needUpdate.value++
 
         clearAddForm()
     })
     .catch(function(error) {
-        console.error(error);
-        ElMessage.error('Add error: ' + error.message);
-    });
+        console.error(error)
+        ElMessage.error('Add error: ' + error.message)
+    })
 }
 
 // Clearn add form after add success
@@ -166,6 +169,11 @@ function startSearch() {
 }
 
 function fillTagsArray(str, targetArr) {
+    // clear old values
+    if (targetArr.length > 0) {
+        targetArr.splice(0, target.length)
+    }
+    
     // str to targetArr
     if (str.length > 0) {
         // pre: Replace consecutive spaces
@@ -175,7 +183,7 @@ function fillTagsArray(str, targetArr) {
 
         let arr = str.split(' ')
         if (arr.length > 5) {
-            ElMessage.warning('At most 5 tags.');
+            ElMessage.warning('At most 5 tags.')
             // focus again
             // todo
             return
@@ -186,7 +194,14 @@ function fillTagsArray(str, targetArr) {
             for (let i=0; i<arr.length; i++) {
                 let item = arr[i].trim()
                 if (item.length > 10) {
-                    ElMessage.warning('Max length of a tag: 10 characters.');
+                    ElMessage.warning('Max length of a tag: 10 characters.')
+                    // focus again
+                    // todo
+                    return
+                }
+                // check duplicate tag
+                if (targetArr.indexOf(item) >= 0) {
+                    ElMessage.warning('Duplicated tag: ' + item)
                     // focus again
                     // todo
                     return
@@ -194,14 +209,8 @@ function fillTagsArray(str, targetArr) {
                 targetArr.push(item)
             }
         }
-    } else {
-        // clear old values
-        if (targetArr.length > 0) {
-            targetArr.splice(0, target.length)
-        }
     }
 }
-
 
 const needUpdate = ref(0)
 watch(needUpdate, (val) => {
@@ -211,18 +220,18 @@ watch(needUpdate, (val) => {
 // Process content of a text
 function processTextContent(content) {
     if (Object.is(content, null) || Object.is(content, undefined)) {
-        return '';
+        return ''
     }
 
     let pcontent = content
     pcontent = htmlEncode(pcontent)
 
     // replace \n
-    pcontent = pcontent.replaceAll("\n", "<br>");
+    pcontent = pcontent.replaceAll("\n", "<br>")
 
     // replace url in content
     // Note, there are some bugs TODO
-    let urlg = new RegExp("http[s]://[a-zA-Z0-9\.\?/#=_:\\-\\+%]+", "ig");
+    let urlg = new RegExp("http[s]://[a-zA-Z0-9\.\?/#=_:\\-\\+%]+", "ig")
     pcontent = pcontent.replaceAll(urlg, replaceUrl)
 
     return pcontent
@@ -230,14 +239,14 @@ function processTextContent(content) {
 
 // HTML special characters
 function htmlEncode(content) {
-    content = content.replaceAll("&", "&amp;");
+    content = content.replaceAll("&", "&amp;")
 			
-    content = content.replaceAll("<", "&lt;");
-    content = content.replaceAll(">", "&gt;");
-    content = content.replaceAll("\"", "&quot;");
-    content = content.replaceAll(" ", "&nbsp;");
+    content = content.replaceAll("<", "&lt;")
+    content = content.replaceAll(">", "&gt;")
+    content = content.replaceAll("\"", "&quot;")
+    content = content.replaceAll(" ", "&nbsp;")
 
-    content = content.replaceAll("\t", "&emsp;");
+    content = content.replaceAll("\t", "&emsp;")
 
     return content
 }
