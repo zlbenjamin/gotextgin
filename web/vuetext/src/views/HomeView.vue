@@ -28,8 +28,9 @@ const grespOk = 200
 const pageFindForm = reactive({
     pageNo: 1,
     pageSize: 10,
-    kwContent:'',
-    type:''
+    kwContent: '',
+    type: '',
+    tags: []
 })
 
 const pfPageNo = ref(1)
@@ -167,6 +168,21 @@ function clearAddForm() {
 // more search conditions
 const showSearch = ref(false)
 
+const searchTags0 = ref('')
+const searchForm = reactive({
+    type: '',
+    kwContent: '',
+    tags: []
+})
+
+// Start a search
+// replace fields in 
+function startSearch() {
+    console.log(searchTags0.value)
+    console.log(searchForm)
+}
+
+
 const needUpdate = ref(0)
 watch(needUpdate, (val) => {
     pageFind()
@@ -222,7 +238,7 @@ function replaceUrl(url) {
         <el-form :model="addForm" label-width="auto" style="max-width: 600px">
             <el-form-item label="">
                 <el-input v-model.trim="addForm.type" 
-                    class="el-input-width-16"
+                    placeholder="Text type"
                     minlength="1" maxlength="10" show-word-limit
                     clearable />
             </el-form-item>
@@ -249,7 +265,30 @@ function replaceUrl(url) {
         </el-form>
     </div>
     <div v-show="showSearch">
-        <h2>Search form todo</h2>
+        <h1>Search text</h1>
+        <el-form :model="searchForm" label-width="auto" style="max-width: 600px">
+            <el-form-item label="">
+                <el-input v-model.trim="searchForm.type" 
+                    placeholder="Text type (full name)"
+                    minlength="1" maxlength="10" show-word-limit
+                    clearable />
+            </el-form-item>
+            <el-form-item label="">
+                <el-input v-model.trim="searchForm.kwContent" 
+                    placeholder="Key word of the content"
+                    minlength="1" maxlength="20" show-word-limit
+                    clearable />
+            </el-form-item>
+            <el-form-item>
+                <el-input v-model="searchTags0" 
+                    placeholder="Tags separated by spaces (AND)"
+                    maxlength="55" show-word-limit
+                    clearable />
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="startSearch">Submit</el-button>
+            </el-form-item>
+        </el-form>
     </div>
 <div style="display: flex; justify-content: center; align-items: center;">
                 <el-pagination
