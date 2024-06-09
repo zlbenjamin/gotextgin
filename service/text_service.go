@@ -46,7 +46,7 @@ func AddText(c *gin.Context) {
 		}
 		result := tx.Create(record)
 		if result.Error != nil {
-			log.Println("Add text failed")
+			log.Panicln("Add text failed：", result.Error.Error())
 			return result.Error
 		}
 		log.Println("Add text success. id=", record.Id)
