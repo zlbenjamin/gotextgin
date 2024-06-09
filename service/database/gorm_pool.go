@@ -26,7 +26,10 @@ func init() {
 
 // Init mysql pool
 func initMySql(setting *config.Database) {
-	uri := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=true",
+	// insert emoji failed: 🎈,
+	// Conversion from collation utf8mb3_general_ci into utf8mb4_0900_ai_ci impossible for parameter
+	// uri := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=true", // no
+	uri := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&collation=utf8mb4_0900_ai_ci&parseTime=true",
 		setting.User,
 		setting.Password,
 		setting.Host,
