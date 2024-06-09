@@ -212,49 +212,20 @@ func PageFindText(c *gin.Context) {
 		return
 	}
 
-	// 1/2 Query data
-	dql, dqlParams := makeDql(params)
-	rows, err := database.QueryDataList(dql, dqlParams...)
-	if err != nil {
-		log.Println("Page find texts failed: err=", err.Error(), "params=", params)
+	textList2, total := pageFindByGorm(params)
 
-		resp := pkg.ApiResponse{
-			Code:    500,
-			Message: "Page find failed",
-		}
-		c.JSON(http.StatusInternalServerError, resp)
-		return
-	}
-
-	var textList []sttext.Text
-	for rows.Next() {
-		var record sttext.Text
-
-		err := rows.Scan(&record.Id, &record.Content, &record.Type, &record.CreateTime, &record.UpdateTime)
-		if err != nil {
-			log.Println(err)
-			resp := pkg.ApiResponse{
-				Code:    500,
-				Message: "Page find failed",
-			}
-			c.JSON(http.StatusInternalServerError, resp)
-			return
-		}
-
-		textList = append(textList, record)
-	}
-	if len(textList) < 1 {
+	if len(textList2) < 1 {
 		// Set "list":[], or "list":null
-		textList = make([]sttext.Text, 0)
+		textList2 = make([]sttext.Text, 0)
 	}
 
-	// 2/2 Query total
+	// Response data
 	pfData := pkg.ApiPageFindResponse{
 		PageNo:    params.PageNo,
 		PageSize:  params.PageSize,
 		Total:     0,
 		TotalPage: 0,
-		List:      textList,
+		List:      textList2,
 	}
 	resp := pkg.ApiResponse{
 		Code:    200,
@@ -263,12 +234,7 @@ func PageFindText(c *gin.Context) {
 	}
 
 	var totalPage int64
-	queryTotal := pageFindTotal(params)
-	if queryTotal < 0 {
-		// failed
-		resp.Message = "Get total failed"
-		goto labelend
-	}
+	queryTotal := total
 
 	if queryTotal > 0 {
 		// Calc
@@ -282,8 +248,111 @@ func PageFindText(c *gin.Context) {
 		resp.Data = pfData
 	}
 
-labelend:
 	c.JSON(http.StatusOK, resp)
+}
+
+// Page find text based on gorm
+// db.Raw function
+func pageFindByGorm(params pageFindParams) ([]sttext.Text, int64) {
+	// query data
+	sql1 := "SELECT id,content,type,create_time,update_time" +
+		" FROM text"
+	whreBody, dqlParams := makePageFidWhereBody(params)
+	sql1 += whreBody
+
+	// ordery by
+	sql1 += " ORDER BY create_time DESC"
+
+	// paging
+	offset := (params.PageNo - 1) * params.PageSize
+	sql1 += " LIMIT ?,?"
+	dqlParams = append(dqlParams, offset)
+	dqlParams = append(dqlParams, params.PageSize)
+
+	db := database.GetDB()
+
+	var textList []sttext.Text
+	db.Raw(sql1, dqlParams...).Scan(&textList)
+
+	// query total
+	var total int64
+	sql2 := "SELECT count(1) FROM text"
+	sql2 += whreBody
+	countParams := dqlParams[:len(dqlParams)-2]
+	db.Raw(sql2, countParams...).Scan(&total)
+
+	return textList, total
+}
+
+func makePageFidWhereBody(params pageFindParams) (dql string, dqlParams []any) {
+	// where clause
+	whereBody := ""
+
+	// Tags
+	tags := params.Tags
+	tagsLen := len(tags)
+	if tagsLen > 0 {
+		whereBody += " id IN (SELECT t1.text_id FROM text_tag t1"
+
+		if tagsLen == 1 {
+			whereBody += " WHERE t1.name = ?" + ")"
+			dqlParams = append(dqlParams, tags[0])
+			goto moreCond
+		}
+
+		if tagsLen > 1 {
+			whereBody += " JOIN text_tag t2 ON t1.text_id = t2.text_id" +
+				" AND t1.name = ?" +
+				" AND t2.name = ?"
+			dqlParams = append(dqlParams, tags[0])
+			dqlParams = append(dqlParams, tags[1])
+		}
+		if tagsLen > 2 {
+			whereBody += " JOIN text_tag t3 ON t1.text_id = t3.text_id" +
+				" AND t3.name = ?"
+			dqlParams = append(dqlParams, tags[2])
+		}
+		if tagsLen > 3 {
+			whereBody += " JOIN text_tag t4 ON t1.text_id = t4.text_id" +
+				" AND t4.name = ?"
+			dqlParams = append(dqlParams, tags[3])
+		}
+		if tagsLen > 4 {
+			whereBody += " JOIN text_tag t5 ON t1.text_id = t5.text_id" +
+				" AND t5.name = ?"
+			dqlParams = append(dqlParams, tags[4])
+		}
+
+		whereBody += ")"
+	}
+
+moreCond:
+
+	// KwContent
+	if params.KwContent != "" {
+		if whereBody == "" {
+			whereBody += " content LIKE concat('%', ?, '%')"
+		} else {
+			whereBody += " AND content LIKE concat('%', ?, '%')"
+		}
+		dqlParams = append(dqlParams, params.KwContent)
+	}
+
+	// Type
+	if params.Type != "" {
+		if whereBody == "" {
+			whereBody += " type = ?"
+		} else {
+			whereBody += " AND type = ?"
+		}
+		dqlParams = append(dqlParams, params.Type)
+	}
+
+	if whereBody != "" {
+		dql += " WHERE " + whereBody
+	}
+
+	return
 }
 
 // Make DQL for paging find texts
