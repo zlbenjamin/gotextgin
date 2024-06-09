@@ -342,6 +342,11 @@ function replaceUrl(url) {
     <div v-html="processTextContent(item.content)" class="tf tf-content"></div>
     <span class="tf tf-type">#{{ item.type }}</span>
     <span class="tf tf-time">{{ item.createTime }}</span>
+    <div>
+        <span style="font-weight: bold;">Tags: ({{ item.tags.length }})</span>
+        <br>
+        <el-link class="tf tf-tag" v-for="(tag,idx2) in item.tags" @click="">{{ tag.name }}</el-link>
+    </div>
 </div>
 </template>
 
@@ -377,5 +382,10 @@ function replaceUrl(url) {
 }
 .tf-time {
     width: 180px;
+}
+.tf-tag {
+    width: 120px;
+    color: red;
+    text-align: center;
 }
 </style>
