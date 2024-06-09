@@ -6,17 +6,21 @@ CREATE TABLE `text` (
   `type` varchar(100) DEFAULT NULL COMMENT 'type, such markdown, golang, c++, java, python, html, javascript etc.',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'the lastest update time',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_text_create_time` (`create_time`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='text';
+
 
 CREATE TABLE `text_comment` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'PK',
-  `text_id` int NOT NULL COMMENT 'PK of text',
-  `comment` varchar(500) NOT NULL COMMENT 'Comment for text',
+  `text_id` int NOT NULL COMMENT 'PK of a Text',
+  `comment` varchar(500) NOT NULL COMMENT 'content of comment',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
-  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'the lastest update time',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Text comment';
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'the latest update time',
+  PRIMARY KEY (`id`),
+  KEY `idx_text_comment_text_id` (`text_id`),
+  KEY `idx_text_comment_create_time` (`create_time`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Comment of text';
 
 CREATE TABLE `text_tag` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -24,6 +28,6 @@ CREATE TABLE `text_tag` (
   `name` varchar(500) NOT NULL COMMENT 'Tag name',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'the latest update time',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_text_tag_text_id` (`text_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
