@@ -53,10 +53,11 @@ func (params AddTextParams) ConvertToText() sttext.Text {
 
 // Params of page find
 type pageFindParams struct {
-	PageNo    int32  `json:"pageNo" binding:"number,gt=0"`
-	PageSize  int32  `json:"pageSize" binding:"number,gte=1,lte=500"`
-	KwContent string `json:"kwContent" binding:"max=50"`
-	Type      string `json:"type" binding:"max=10"`
+	PageNo    int32    `json:"pageNo" binding:"number,gt=0"`
+	PageSize  int32    `json:"pageSize" binding:"number,gte=1,lte=500"`
+	KwContent string   `json:"kwContent" binding:"max=50"`
+	Type      string   `json:"type" binding:"max=10"`
+	Tags      []string `json:"tags" binding:"checktags"`
 }
 
 // --- comment ---
