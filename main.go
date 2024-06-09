@@ -76,7 +76,9 @@ func main() {
 
 	api.InitTextApis(r)
 
-	addr := ":40000"
+	// addr := ":40000"
+	// Warning, Can't deploy on container!
+	addr := "localhost:40000"
 	s := &http.Server{
 		Addr:           addr,
 		Handler:        r,
@@ -85,6 +87,6 @@ func main() {
 		MaxHeaderBytes: 2 << 20,
 	}
 
-	log.Println("Start web server at 0.0.0.0" + addr)
+	log.Println("Start web server at " + addr)
 	s.ListenAndServe()
 }
