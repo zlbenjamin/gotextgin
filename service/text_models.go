@@ -60,6 +60,11 @@ type pageFindParams struct {
 	Tags      []string `json:"tags" binding:"checktags"`
 }
 
+type PageFindVO struct {
+	sttext.Text
+	Tags []sttext.TextTag `json:"tags"`
+}
+
 // --- comment ---
 
 // Params of adding text comment

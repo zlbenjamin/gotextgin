@@ -220,12 +220,13 @@ func PageFindText(c *gin.Context) {
 	}
 
 	// Response data
+	retList := queryTagsForTextList(textList2)
 	pfData := pkg.ApiPageFindResponse{
 		PageNo:    params.PageNo,
 		PageSize:  params.PageSize,
 		Total:     0,
 		TotalPage: 0,
-		List:      textList2,
+		List:      retList,
 	}
 	resp := pkg.ApiResponse{
 		Code:    200,
@@ -350,6 +351,47 @@ moreCond:
 
 	if whereBody != "" {
 		dql += " WHERE " + whereBody
+	}
+
+	return
+}
+
+func queryTagsForTextList(records []sttext.Text) (retList []PageFindVO) {
+	if len(records) < 1 {
+		return make([]PageFindVO, 0)
+	}
+
+	tids := make([]int32, len(records))
+	for i, rd := range records {
+		var vo PageFindVO
+		vo.Id = rd.Id
+		vo.Content = rd.Content
+		vo.Type = rd.Type
+		vo.CreateTime = rd.CreateTime
+		vo.UpdateTime = rd.UpdateTime
+		vo.Tags = make([]sttext.TextTag, 0)
+
+		retList = append(retList, vo)
+
+		// for query
+		tids[i] = vo.Id
+	}
+
+	// Query tags of a records
+	var tagsAll []sttext.TextTag
+	db := database.GetDB()
+	db.Where("text_id IN ?", tids).Find(&tagsAll)
+
+	for _, tag := range tagsAll {
+		tid := tag.TextId
+		for j, vo := range retList {
+			void := vo.Id
+			if void == tid {
+				vo.Tags = append(vo.Tags, tag)
+				retList[j] = vo
+				break
+			}
+		}
 	}
 
 	return
