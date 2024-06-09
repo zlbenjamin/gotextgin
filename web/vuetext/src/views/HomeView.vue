@@ -171,7 +171,7 @@ function startSearch() {
 function fillTagsArray(str, targetArr) {
     // clear old values
     if (targetArr.length > 0) {
-        targetArr.splice(0, target.length)
+        targetArr.splice(0, targetArr.length)
     }
     
     // str to targetArr
