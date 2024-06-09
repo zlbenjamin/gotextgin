@@ -21,43 +21,26 @@ func init() {
 	database.InitMySqlPool()
 }
 
-func init() {
-	// Create table
-	if database.CheckTableExists(pkg.Table_Text) {
-		return
-	}
-
-	log.Println("Start create table: ", pkg.Table_Text)
-
-	ddl := `
-	CREATE TABLE text (
-		id INT NOT NULL AUTO_INCREMENT COMMENT 'PK',
-		content MEDIUMTEXT NOT NULL COMMENT 'text content',
-		type VARCHAR(100) NULL COMMENT 'type, such markdown, golang, c++, java, python, html, javascript etc.',
-		create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
-		update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'the lastest update time',
-		PRIMARY KEY (id))
-	  COMMENT = 'text';
-	`
-	database.CreateMySqlTable(ddl)
-
-	log.Println("Create table: ", pkg.Table_Text, "success.")
-}
-
 // create or update tables with gorm
 func init() {
 	db := database.GetDB()
-	err := db.AutoMigrate(&pkg.TextComment{})
+	err := db.AutoMigrate(&pkg.Text{})
 	if err != nil {
-		log.Panicln("create table text_comment failed:", err.Error())
+		log.Panicln("create or update table text_comment failed:", err.Error())
 	}
-	log.Println("create table text_comment success.")
+	log.Println("create or update table text success.")
+
+	err = db.AutoMigrate(&pkg.TextComment{})
+	if err != nil {
+		log.Panicln("create or update table text_comment failed:", err.Error())
+	}
+	log.Println("create or update table text_comment success.")
 
 	err = db.AutoMigrate(&pkg.TextTag{})
 	if err != nil {
-		log.Panicln("create table text_tag failed:", err.Error())
+		log.Panicln("create or update table text_tag failed:", err.Error())
 	}
-	log.Println("create table text_tag success.")
+	log.Println("create or update table text_tag success.")
 }
 
 func main() {

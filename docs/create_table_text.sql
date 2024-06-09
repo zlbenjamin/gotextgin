@@ -2,13 +2,13 @@
 
 CREATE TABLE `text` (
   `id` int NOT NULL AUTO_INCREMENT COMMENT 'PK',
-  `content` mediumtext NOT NULL COMMENT 'text content',
-  `type` varchar(100) DEFAULT NULL COMMENT 'type, such markdown, golang, c++, java, python, html, javascript etc.',
+  `content` mediumtext NOT NULL COMMENT 'content of a Text',
+  `type` varchar(100) NOT NULL COMMENT 'type of a Text',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
-  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'the lastest update time',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'the latest update time',
   PRIMARY KEY (`id`),
   KEY `idx_text_create_time` (`create_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='text';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='text';
 
 
 CREATE TABLE `text_comment` (
