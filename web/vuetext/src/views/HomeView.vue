@@ -239,6 +239,26 @@ function processTextContent(content) {
     return pcontent
 }
 
+// Process comment
+function processComment(content) {
+    if (Object.is(content, null) || Object.is(content, undefined)) {
+        return ''
+    }
+
+    let pcontent = content
+    pcontent = htmlEncode(pcontent)
+
+    // replace \n
+    pcontent = pcontent.replaceAll("\n", "<br>")
+
+    // replace url in content
+    // Note, there are some bugs TODO
+    let urlg = new RegExp("http[s]://[a-zA-Z0-9\.\?/#=_:\\-\\+%]+", "ig")
+    pcontent = pcontent.replaceAll(urlg, replaceUrl)
+
+    return pcontent
+}
+
 // HTML special characters
 function htmlEncode(content) {
     content = content.replaceAll("&", "&amp;")
@@ -409,8 +429,25 @@ function httpAddComment() {
     <div>
         <el-button @click="onAddCommentDialog(item.id)" type="success" round size="small">Add Comment</el-button>
     </div>
+    <div>
+        <div style="font-weight: bold;">Comments:</div>
+        <div v-for="(cmt,idx3) in item.comments">
+            <div v-html="processComment(cmt.comment)" class=""></div>
+            <div>
+                <span>{{ cmt.createTime }}</span>
+                <el-button size="small" type="danger" @click="">Del</el-button>
+            </div>
+        </div>
+        <div v-show="item.totalOfComments > 5">
+            <el-link type="success">More comments...</el-link>
+        </div>
+        <div v-show="item.totalOfComments < 1">
+            <el-text type="warning">No comments...</el-text>
+        </div>
+    </div>
 </div>
 
+<!-- dialogs -->
 <el-dialog v-model="dialogAddCommentVisible" title="Add Comment" width="80%">
     <el-form>
         <el-form-item label="Text#ID" :label-width="formLabelWidth">
