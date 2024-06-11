@@ -19,7 +19,7 @@ func InitTextApis(r *gin.Engine) {
 
 	//---comment---
 	textGroup.POST("comment/add", AddTextComment)
-	textGroup.DELETE("comment/:id", DeleteTextCommentById)
+	textGroup.DELETE("comment/:textId/:id", DeleteTextCommentById)
 
 	//---tag---
 
@@ -49,4 +49,8 @@ func AddTextComment(c *gin.Context) {
 // Delete a comment
 func DeleteTextCommentById(c *gin.Context) {
 	service.DeleteTextCommentById(c)
+}
+
+func GetComments(c *gin.Context) {
+	service.GetComments(c)
 }

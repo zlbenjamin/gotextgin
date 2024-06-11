@@ -77,6 +77,7 @@ type AddTextCommentParams struct {
 
 // Params of deleting comment
 type DelTextCommentParams struct {
+	TextId int32 `json:"textId" uri:"textId" binding:"required,number,gt=0"`
 	// Error:Field validation for 'Id' failed on the 'required' tag
 	// Id uint64 `json:"id" binding:"required,number,gt=0"` // no
 	// Error:Field validation for 'Id' failed on the 'gt' tag

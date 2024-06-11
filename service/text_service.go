@@ -3,6 +3,7 @@ package service
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -490,29 +491,60 @@ func DeleteTextCommentById(c *gin.Context) {
 	if err := c.ShouldBindUri(&params1); err != nil {
 		resp := pkg.ApiResponse{
 			Code:    400,
-			Message: "Invalid id",
-			Data:    err.Error(),
+			Message: "Invalid params: " + err.Error(),
 		}
 		c.JSON(http.StatusBadRequest, resp)
 		return
 	}
 
-	var tc sttext.TextComment
-	ra, err := database.DeleteOneRecordByPk(&tc, params1.Id)
-	if err != nil {
-		log.Println("Delete comment failed. id=", params1.Id, "err=", err.Error())
+	// find comment with textId and id first
+	var cmt sttext.TextComment
+	db := database.GetDB()
+	result := db.First(&cmt, params1.Id)
+	err := result.Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		resp := pkg.ApiResponse{
+			Code:    200,
+			Message: "No such comment or deleted",
+			Data:    true,
+		}
+		c.JSON(http.StatusOK, resp)
+		return
+	} else if err != nil {
+		log.Println("Query comment failed: err=", err.Error(), ", params=", params1)
 		resp := pkg.ApiResponse{
 			Code:    500,
-			Message: "Delete error",
-			Data:    err.Error(),
+			Message: "Query comment failed: " + err.Error(),
 		}
-		c.JSON(http.StatusBadRequest, resp)
+		c.JSON(http.StatusOK, resp)
 		return
 	}
 
-	if ra > 0 {
-		log.Println("Delete comment success. id=", params1.Id, "RowsAffected=", ra)
+	fmt.Println("todo cmt=", cmt, "text_id=", params1.TextId)
+	if params1.TextId != cmt.TextId {
+		log.Println("Delete comment failed: Comment doesn't belong to the text. params=", params1)
+		resp := pkg.ApiResponse{
+			Code:    http.StatusBadRequest,
+			Message: "Comment doesn't belong to the text",
+		}
+		c.JSON(http.StatusOK, resp)
+		return
 	}
+
+	// exec delete
+	result = db.Delete(&sttext.TextComment{}, cmt.Id)
+	err = result.Error
+	if err != nil {
+		log.Println("Delete comment failed: err=", err.Error(), ", params=", params1)
+		resp := pkg.ApiResponse{
+			Code:    500,
+			Message: "Delete comment failed: " + err.Error(),
+		}
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+
+	log.Printf("Delete comment success: textId=%d, id=%d\n", params1.TextId, params1.Id)
 
 	// Success.
 	resp := pkg.ApiResponse{
