@@ -17,7 +17,7 @@ const gurls = {
     },
     comment: {
         add: '/api/text/comment/add',
-        del: '/api/text/comment/:id'
+        del: '/api/text/comment/:textId/:id'
     }
 }
 
@@ -166,11 +166,11 @@ function httpDeleteText(record) {
     .then(function(response){
         let result = response.data;
         if (result.code != grespOk) {
-            ElMessage.error('Delete failed: ' + JSON.stringify(result))
+            ElMessage.error('Delete text failed: ' + JSON.stringify(result))
             return;
         }
 
-        ElMessage.success('Delete success🎈')
+        ElMessage.success('Delete text success🎈')
 
         needUpdate.value++
     })
@@ -373,7 +373,6 @@ function httpAddComment() {
 
 // delete comment
 function onDeleteComment(cmt) {
-    console.log("todo cmt=" + JSON.stringify(cmt))
     ElMessageBox.confirm("Confirm the deletion of the comment?")
     .then(() => {
         httpDeleteComment(cmt)
@@ -384,7 +383,28 @@ function onDeleteComment(cmt) {
 }
 
 function httpDeleteComment(cmt) {
-    console.log("httpDeleteComment...url=" + gurls.comment.del)
+    let url = gurls.comment.del
+    url = url.replaceAll(":textId", cmt.textId)
+    url = url.replaceAll(":id", cmt.id)
+    
+    axios
+    .delete(url)
+    .then(function(response) {
+        let result = response.data;
+        if (result.code != grespOk) {
+            ElMessage.error('Delete comment failed: ' + JSON.stringify(result))
+            return;
+        }
+
+        ElMessage.success('Delete comment success🎈')
+
+        needUpdate.value++
+    })
+    .catch(function(error) {
+        console.error("Delete comment error: ")
+        console.error(error);
+        ElMessage.error('Delete comment error: ' + error.message);
+    });
 }
 
 </script>
