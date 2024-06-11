@@ -180,9 +180,10 @@ func DeleteTextById(c *gin.Context) {
 		log.Println("Delete text failed: id=", id, "err=", err)
 		resp := pkg.ApiResponse{
 			Code:    500,
-			Message: "Delete failed",
+			Message: "Delete failed:" + err.Error(),
 		}
 		c.JSON(http.StatusOK, resp)
+		return
 	}
 
 	resp := pkg.ApiResponse{
