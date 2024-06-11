@@ -23,6 +23,8 @@ const gurls = {
 
 const grespOk = 200
 
+const formLabelWidth = '140px'
+
 // Paging
 
 // request data
@@ -256,6 +258,26 @@ function replaceUrl(url) {
     return "<a href='" + url + "' target='_blank' class='content-url' >" + decodeURI(url) + "</a>"
 }
 
+// Comment
+
+const dialogAddCommentVisible = ref(false)
+
+const addCommentForm = reactive({
+    textId: 0,
+    comment:'',
+})
+
+function onAddCommentDialog(textId) {
+    dialogAddCommentVisible.value = true
+    console.log(textId) // todo
+    addCommentForm.textId = textId
+}
+
+function addComment() {
+    console.log(addCommentForm) // todo
+    // todo
+}
+
 </script>
 
 <template>
@@ -347,7 +369,33 @@ function replaceUrl(url) {
         <br>
         <el-link class="tf tf-tag" v-for="(tag,idx2) in item.tags" @click="">{{ tag.name }}</el-link>
     </div>
+    <div>
+        <el-button @click="onAddCommentDialog(item.id)">Add Comment</el-button>
+    </div>
 </div>
+
+<el-dialog v-model="dialogAddCommentVisible" title="Add Comment" width="80%">
+    <el-form>
+        <el-form-item label="Text#ID" :label-width="formLabelWidth">
+            <el-text>{{ addCommentForm.textId }}</el-text>
+        </el-form-item>
+        <el-form-item label="Comment" :label-width="formLabelWidth">
+            <el-input v-model="addCommentForm.comment"
+                type="textarea"
+                placeholder="Input comment here"
+                autocomplete="off"
+                :rows="20"
+                maxlength="200"
+                show-word-limit
+                @keyup.ctrl.enter="addComment"
+                />
+        </el-form-item>
+    </el-form>
+    <template #footer>
+        <el-button type="primary" @click="addComment">Submit</el-button>
+        <el-button @click="dialogUpdateFileVisible = false">Cancel</el-button>
+    </template>
+</el-dialog>
 </template>
 
 <style scoped>
