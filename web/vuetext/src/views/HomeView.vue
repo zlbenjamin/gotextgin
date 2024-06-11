@@ -148,7 +148,6 @@ function clearAddForm() {
 // Delete a text
 
 function onDeleteText(record) {
-    console.log("todo record=" + JSON.stringify(record))
     ElMessageBox.confirm("Confirm the deletion of the text?")
     .then(() => {
         httpDeleteText(record)
@@ -159,8 +158,27 @@ function onDeleteText(record) {
 }
 
 function httpDeleteText(record) {
-console.log("todo httpDeleteText...url=" + gurls.text.del)
+    let url = gurls.text.del
+    url = url.replaceAll(":id", record.id)
 
+    axios
+    .delete(url)
+    .then(function(response){
+        let result = response.data;
+        if (result.code != grespOk) {
+            ElMessage.error('Delete failed: ' + JSON.stringify(result))
+            return;
+        }
+
+        ElMessage.success('Delete success🎈')
+
+        needUpdate.value++
+    })
+    .catch(function(error) {
+        console.error("Delete text error: ")
+        console.error(error);
+        ElMessage.error('Delete text error: ' + error.message);
+    });
 }
 
 // more search conditions
