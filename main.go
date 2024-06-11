@@ -59,9 +59,10 @@ func main() {
 
 	api.InitTextApis(r)
 
-	// addr := ":40000"
+	// addr := ":40000" // ok
+	addr := "0.0.0.0:40000" // same with the up addr
 	// Warning, Can't deploy on container!
-	addr := "localhost:40000"
+	// addr := "localhost:40000"
 	s := &http.Server{
 		Addr:           addr,
 		Handler:        r,
