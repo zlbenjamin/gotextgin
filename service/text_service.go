@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 	"github.com/zlbenjamin/gotextgin/pkg"
@@ -221,6 +222,9 @@ func PageFindText(c *gin.Context) {
 
 	// Response data
 	retList := queryTagsForTextList(textList2)
+
+	queryCommentsForText(&retList)
+
 	pfData := pkg.ApiPageFindResponse{
 		PageNo:    params.PageNo,
 		PageSize:  params.PageSize,
@@ -397,6 +401,35 @@ func queryTagsForTextList(records []sttext.Text) (retList []PageFindVO) {
 	return
 }
 
+func queryCommentsForText(textList *[]PageFindVO) {
+	const maxComments = 5
+
+	var wg sync.WaitGroup
+
+	for i, v := range *textList {
+		wg.Add(1)
+
+		go func(textId int32) {
+			defer wg.Done()
+
+			var comments []sttext.TextComment
+			db := database.GetDB()
+			db.Where("text_id = ?", textId).
+				Order("create_time desc").
+				Limit(maxComments).
+				Find(&comments)
+
+			(*textList)[i].Comments = comments
+
+			var count int64
+			db.Model(&sttext.TextComment{}).Where("text_id =?", textId).Count(&count)
+			(*textList)[i].TotalOfComments = count
+		}(v.Id)
+	}
+
+	wg.Wait()
+}
+
 // ---comment---
 
 // Add a comment for a text
@@ -487,4 +520,8 @@ func DeleteTextCommentById(c *gin.Context) {
 		Data:    true,
 	}
 	c.JSON(http.StatusOK, resp)
+}
+
+func GetComments(c *gin.Context) {
+	panic("unimplemented")
 }

@@ -62,7 +62,9 @@ type pageFindParams struct {
 
 type PageFindVO struct {
 	sttext.Text
-	Tags []sttext.TextTag `json:"tags"`
+	Tags            []sttext.TextTag     `json:"tags"`
+	Comments        []sttext.TextComment `json:"comments"`
+	TotalOfComments int64                `json:"totalOfComments"`
 }
 
 // --- comment ---
@@ -80,4 +82,19 @@ type DelTextCommentParams struct {
 	// Error:Field validation for 'Id' failed on the 'gt' tag
 	// Id uint64 `json:"id" binding:"number,gt=0"` // no
 	Id uint64 `json:"id" uri:"id" binding:"required,number,gt=0"`
+}
+
+type GetCommentsDTO struct {
+	TextIdList []int32 `json:"textIdList"`
+	MaxNumber  int32   `json:"maxNumber"`
+}
+
+type GetCommentsVO struct {
+	List []TextCommentsVO `json:"list"`
+}
+
+type TextCommentsVO struct {
+	TextId   int32                `json:"textId"`
+	Total    uint64               `json:"total"`
+	Comments []sttext.TextComment `json:"comments"`
 }
