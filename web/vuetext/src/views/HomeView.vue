@@ -268,14 +268,51 @@ const addCommentForm = reactive({
 })
 
 function onAddCommentDialog(textId) {
-    dialogAddCommentVisible.value = true
-    console.log(textId) // todo
+    if (textId < 1) {
+        ElMessage.warning("Invalid ID of text. textId=" + textId)
+        return
+    }
+
     addCommentForm.textId = textId
+
+    dialogAddCommentVisible.value = true
 }
 
 function addComment() {
-    console.log(addCommentForm) // todo
-    // todo
+    addCommentForm.comment = addCommentForm.comment.trim()
+    if (Object.is(addCommentForm.comment, '')) {
+        ElMessage.warning("Comment is empty.")
+        return
+    }
+
+    httpAddComment()
+}
+
+function httpAddComment() {
+    let url = gurls.comment.add
+    axios
+    .post(url, addCommentForm)
+    .then(function(response) {
+        let result = response.data
+        let rcode = result.code
+        if (! Object.is(rcode, grespOk)) {
+            ElMessage.warning("Add comment failed: " + JSON.stringify(result))
+            return
+        }
+
+        ElMessage.success('Add comment success[' + result.data + ']🎈')
+
+        dialogAddCommentVisible.value = false
+
+        // reset form data
+        addCommentForm.textId = 0
+        addCommentForm.comment = ''
+    })
+    .catch(function(error) {
+        console.error('Add comment error:')
+        console.error(error)
+        ElMessage.error('Add comment error: ' + error.message)
+    })
 }
 
 </script>
@@ -362,7 +399,7 @@ function addComment() {
     }">
     <span class="tf tf-id">{{ item.id }}</span>
     <div v-html="processTextContent(item.content)" class="tf tf-content"></div>
-    <span class="tf tf-type">#{{ item.type }}</span>
+    <span class="tf tf-type">Type: {{ item.type }}</span>
     <span class="tf tf-time">{{ item.createTime }}</span>
     <div>
         <span style="font-weight: bold;">Tags: ({{ item.tags.length }})</span>
@@ -370,7 +407,7 @@ function addComment() {
         <el-link class="tf tf-tag" v-for="(tag,idx2) in item.tags" @click="">{{ tag.name }}</el-link>
     </div>
     <div>
-        <el-button @click="onAddCommentDialog(item.id)">Add Comment</el-button>
+        <el-button @click="onAddCommentDialog(item.id)" type="success" round size="small">Add Comment</el-button>
     </div>
 </div>
 
@@ -384,16 +421,17 @@ function addComment() {
                 type="textarea"
                 placeholder="Input comment here"
                 autocomplete="off"
-                :rows="20"
+                :rows="10"
                 maxlength="200"
                 show-word-limit
                 @keyup.ctrl.enter="addComment"
+                resize="none"
                 />
         </el-form-item>
     </el-form>
     <template #footer>
         <el-button type="primary" @click="addComment">Submit</el-button>
-        <el-button @click="dialogUpdateFileVisible = false">Cancel</el-button>
+        <el-button @click="dialogAddCommentVisible = false">Cancel</el-button>
     </template>
 </el-dialog>
 </template>
@@ -424,6 +462,7 @@ function addComment() {
     width: 600px;
 	word-break: break-all;
 	word-wrap: break-word;
+    border-bottom: 1px solid yellow;
 }
 .tf-type {
     width: 120px;
