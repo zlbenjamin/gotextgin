@@ -145,6 +145,24 @@ function clearAddForm() {
     addForm.tags.splice(0, addForm.tags.length)
 }
 
+// Delete a text
+
+function onDeleteText(record) {
+    console.log("todo record=" + JSON.stringify(record))
+    ElMessageBox.confirm("Confirm the deletion of the text?")
+    .then(() => {
+        httpDeleteText(record)
+    })
+    .catch((e) => {
+        // e is cancel
+    })
+}
+
+function httpDeleteText(record) {
+console.log("todo httpDeleteText...url=" + gurls.text.del)
+
+}
+
 // more search conditions
 const showSearch = ref(false)
 
@@ -335,6 +353,22 @@ function httpAddComment() {
     })
 }
 
+// delete comment
+function onDeleteComment(cmt) {
+    console.log("todo cmt=" + JSON.stringify(cmt))
+    ElMessageBox.confirm("Confirm the deletion of the comment?")
+    .then(() => {
+        httpDeleteComment(cmt)
+    })
+    .catch((e) => {
+        // e is cancel
+    })
+}
+
+function httpDeleteComment(cmt) {
+    console.log("httpDeleteComment...url=" + gurls.comment.del)
+}
+
 </script>
 
 <template>
@@ -418,9 +452,10 @@ function httpAddComment() {
         'content-in-list-1':(index%2 == 1)
     }">
     <span class="tf tf-id">{{ item.id }}</span>
-    <div v-html="processTextContent(item.content)" class="tf tf-content"></div>
     <span class="tf tf-type">Type: {{ item.type }}</span>
     <span class="tf tf-time">{{ item.createTime }}</span>
+    <Delete @click="onDeleteText(item)" class="icon-delete-tag" title="Delete the text" />
+    <div v-html="processTextContent(item.content)" class="tf tf-content"></div>
     <div>
         <span style="font-weight: bold;">Tags: ({{ item.tags.length }})</span>
         <br>
@@ -431,11 +466,11 @@ function httpAddComment() {
     </div>
     <div>
         <div style="font-weight: bold;">Comments:</div>
-        <div v-for="(cmt,idx3) in item.comments">
+        <div v-for="(cmt,idx3) in item.comments" style="border: 1px solid #FF00FF; margin-bottom: 2px;">
             <div v-html="processComment(cmt.comment)" class=""></div>
             <div>
                 <span>{{ cmt.createTime }}</span>
-                <el-button size="small" type="danger" @click="">Del</el-button>
+                <Delete @click="onDeleteComment(cmt)" class="icon-delete-tag" title="Delete" />
             </div>
         </div>
         <div v-show="item.totalOfComments > 5">
@@ -496,7 +531,8 @@ function httpAddComment() {
     width: 40px;
 }
 .tf-content {
-    width: 600px;
+    display: block;
+    
 	word-break: break-all;
 	word-wrap: break-word;
     border-bottom: 1px solid yellow;
@@ -511,5 +547,12 @@ function httpAddComment() {
     width: 120px;
     color: red;
     text-align: center;
+}
+
+.icon-delete-tag {
+    color: red;
+    width: 1em;
+    height: 1em; 
+    margin-right: 8px;
 }
 </style>
