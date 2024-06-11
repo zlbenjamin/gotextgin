@@ -360,6 +360,8 @@ function httpAddComment() {
 
         dialogAddCommentVisible.value = false
 
+        needUpdate.value++
+
         // reset form data
         addCommentForm.textId = 0
         addCommentForm.comment = ''
