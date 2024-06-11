@@ -11,7 +11,12 @@ set godbname=dbname
 set gomysqlConfig=d:\\run\\dbconfig.json  
 
 ## Windows Power Shell
-TODO  
+$env:godbuser="user"  
+$env:godbpassword="password"  
+$env:godbhost="127.0.0.1"  
+$env:godbport="3306"  
+$env:godbname="dbname"  
+$env:gomysqlConfig="d:\\run\\dbconfig.json"  
 
 ## Linux
 TODO  
