@@ -9,7 +9,12 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "contact": {
+            "name": "zlbenjamin"
+        },
+        "license": {
+            "name": "No license"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -374,16 +379,19 @@ const docTemplate = `{
             ],
             "properties": {
                 "content": {
+                    "description": "Text content",
                     "type": "string",
                     "maxLength": 10000
                 },
                 "tags": {
+                    "description": "Up to 5 tags",
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
                 "type": {
+                    "description": "Text type",
                     "type": "string",
                     "maxLength": 10
                 }
@@ -420,7 +428,8 @@ const docTemplate = `{
                 },
                 "totalOfComments": {
                     "description": "Total of comments",
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 },
                 "type": {
                     "description": "Text type",
@@ -475,18 +484,23 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "comment": {
+                    "description": "Content",
                     "type": "string"
                 },
                 "createTime": {
+                    "description": "Create time",
                     "type": "string"
                 },
                 "id": {
+                    "description": "Primary key",
                     "type": "integer"
                 },
                 "textId": {
+                    "description": "Primary key of text",
                     "type": "integer"
                 },
                 "updateTime": {
+                    "description": "The latest update time",
                     "type": "string"
                 }
             }
@@ -495,18 +509,23 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "createTime": {
+                    "description": "Create time",
                     "type": "string"
                 },
                 "id": {
+                    "description": "Primary key",
                     "type": "integer"
                 },
                 "name": {
+                    "description": "Tag name",
                     "type": "string"
                 },
                 "textId": {
+                    "description": "Primary key of text",
                     "type": "integer"
                 },
                 "updateTime": {
+                    "description": "The latest update time",
                     "type": "string"
                 }
             }
@@ -516,12 +535,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "0.1.0",
 	Host:             "",
-	BasePath:         "",
+	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "gotextgin",
+	Description:      "A web project for managing kinds of text.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

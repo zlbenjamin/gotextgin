@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   pkg.ApiPageFindResponse:
     properties:
@@ -41,13 +42,16 @@ definitions:
   service.AddTextParams:
     properties:
       content:
+        description: Text content
         maxLength: 10000
         type: string
       tags:
+        description: Up to 5 tags
         items:
           type: string
         type: array
       type:
+        description: Text type
         maxLength: 10
         type: string
     required:
@@ -76,6 +80,7 @@ definitions:
         type: array
       totalOfComments:
         description: Total of comments
+        example: 0
         type: integer
       type:
         description: Text type
@@ -117,31 +122,47 @@ definitions:
   text.TextComment:
     properties:
       comment:
+        description: Content
         type: string
       createTime:
+        description: Create time
         type: string
       id:
+        description: Primary key
         type: integer
       textId:
+        description: Primary key of text
         type: integer
       updateTime:
+        description: The latest update time
         type: string
     type: object
   text.TextTag:
     properties:
       createTime:
+        description: Create time
         type: string
       id:
+        description: Primary key
         type: integer
       name:
+        description: Tag name
         type: string
       textId:
+        description: Primary key of text
         type: integer
       updateTime:
+        description: The latest update time
         type: string
     type: object
 info:
-  contact: {}
+  contact:
+    name: zlbenjamin
+  description: A web project for managing kinds of text.
+  license:
+    name: No license
+  title: gotextgin
+  version: 0.1.0
 paths:
   /api/text/{id}:
     delete:

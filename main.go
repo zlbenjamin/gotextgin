@@ -47,6 +47,14 @@ func init() {
 	log.Println("create or update table text_tag success.")
 }
 
+// go-swagger, global info
+// ---
+// @title gotextgin
+// @version 0.1.0
+// @description A web project for managing kinds of text.
+// @contact.name zlbenjamin
+// @license.name No license
+// @BasePath /
 func main() {
 	r := gin.New()
 
