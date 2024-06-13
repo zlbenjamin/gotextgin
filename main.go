@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	_ "github.com/zlbenjamin/gotextgin/docs"
+	_ "github.com/zlbenjamin/gotextgin/prjswagger"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
