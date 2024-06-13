@@ -11,9 +11,12 @@ import (
 
 // Params of adding text
 type AddTextParams struct {
-	Content string   `json:"content" binding:"required,max=10000"`
-	Type    string   `json:"type" binding:"max=10"`
-	Tags    []string `json:"tags" binding:"checktags"`
+	// Text content
+	Content string `json:"content" binding:"required,max=10000"`
+	// Text type
+	Type string `json:"type" binding:"max=10"`
+	// Up to 5 tags
+	Tags []string `json:"tags" binding:"checktags"`
 }
 
 // check tags
@@ -73,7 +76,7 @@ type PageFindVO struct {
 	// Comments of text
 	Comments []sttext.TextComment `json:"comments"`
 	// Total of comments
-	TotalOfComments int64 `json:"totalOfComments", example:"0"`
+	TotalOfComments int64 `json:"totalOfComments" example:"0"`
 }
 
 // --- comment ---

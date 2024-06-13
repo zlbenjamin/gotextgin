@@ -27,18 +27,28 @@ type Text struct {
 
 // table: text_comment
 type TextComment struct {
-	Id         uint64    `json:"id" gorm:"primaryKey;comment:ID"`
-	TextId     int32     `json:"textId" gorm:"not null;comment:ID of a Text;index"`
-	Comment    string    `json:"comment" gorm:"not null;size:500;comment:content of comment"`
+	// Primary key
+	Id uint64 `json:"id" gorm:"primaryKey;comment:ID"`
+	// Primary key of text
+	TextId int32 `json:"textId" gorm:"not null;comment:ID of a Text;index"`
+	// Content
+	Comment string `json:"comment" gorm:"not null;size:500;comment:content of comment"`
+	// Create time
 	CreateTime time.Time `json:"createTime" gorm:"not null;comment:create time;default:CURRENT_TIMESTAMP;index"`
+	// The latest update time
 	UpdateTime time.Time `json:"updateTime" gorm:"not null;comment:the latest update time;default:CURRENT_TIMESTAMP"`
 }
 
 // table: text_tag
 type TextTag struct {
-	Id         uint64    `json:"id" gorm:"primaryKey;comment:ID"`
-	TextId     int32     `json:"textId" gorm:"not null;comment:ID of a Text;index"`
-	Name       string    `json:"name" gorm:"not null;size:500;comment:Tag name"`
+	// Primary key
+	Id uint64 `json:"id" gorm:"primaryKey;comment:ID"`
+	// Primary key of text
+	TextId int32 `json:"textId" gorm:"not null;comment:ID of a Text;index"`
+	// Tag name
+	Name string `json:"name" gorm:"not null;size:500;comment:Tag name"`
+	// Create time
 	CreateTime time.Time `json:"createTime" gorm:"not null;comment:create time;default:CURRENT_TIMESTAMP"`
+	// The latest update time
 	UpdateTime time.Time `json:"updateTime" gorm:"not null;comment:the latest update time;default:CURRENT_TIMESTAMP"`
 }
