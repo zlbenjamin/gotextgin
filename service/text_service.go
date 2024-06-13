@@ -102,17 +102,17 @@ func GetTextById(c *gin.Context) {
 	if err != nil {
 		resp := pkg.ApiResponse{
 			Code:    400,
-			Message: "Bad request",
+			Message: "Invalid id",
 		}
-		c.JSON(http.StatusBadRequest, resp)
+		c.JSON(http.StatusOK, resp)
 		return
 	}
 	if idi < 1 {
 		resp := pkg.ApiResponse{
 			Code:    400,
-			Message: "Bad request < 1",
+			Message: "Invalid id: < 1",
 		}
-		c.JSON(http.StatusBadRequest, resp)
+		c.JSON(http.StatusOK, resp)
 		return
 	}
 
@@ -132,7 +132,7 @@ func GetTextById(c *gin.Context) {
 				Code:    400,
 				Message: "No data for id",
 			}
-			c.JSON(http.StatusBadRequest, resp)
+			c.JSON(http.StatusOK, resp)
 			return
 		}
 
@@ -141,7 +141,7 @@ func GetTextById(c *gin.Context) {
 			Code:    500,
 			Message: "Query failed",
 		}
-		c.JSON(http.StatusBadRequest, resp)
+		c.JSON(http.StatusOK, resp)
 		return
 	}
 
