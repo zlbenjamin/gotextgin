@@ -14,7 +14,33 @@ const docTemplate = `{
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
-    "paths": {}
+    "paths": {
+        "/api/text/:id": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get a text by its primary key",
+                "responses": {}
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Delete a text by its primary key",
+                "responses": {}
+            }
+        },
+        "/api/text/add": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Add a text",
+                "responses": {}
+            }
+        }
+    }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it

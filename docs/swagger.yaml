@@ -1,4 +1,21 @@
 info:
   contact: {}
-paths: {}
+paths:
+  /api/text/:id:
+    delete:
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete a text by its primary key
+    get:
+      produces:
+      - application/json
+      responses: {}
+      summary: Get a text by its primary key
+  /api/text/add:
+    post:
+      produces:
+      - application/json
+      responses: {}
+      summary: Add a text
 swagger: "2.0"

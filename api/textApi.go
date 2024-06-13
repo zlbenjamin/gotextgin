@@ -25,14 +25,23 @@ func InitTextApis(r *gin.Engine) {
 
 }
 
+// @Summary Add a text
+// @Produce json
+// @Router /api/text/add [post]
 func AddText(c *gin.Context) {
 	service.AddText(c)
 }
 
+// @Summary Get a text by its primary key
+// @Produce json
+// @Router /api/text/:id [get]
 func GetTextById(c *gin.Context) {
 	service.GetTextById(c)
 }
 
+// @Summary Delete a text by its primary key
+// @Produce json
+// @Router /api/text/:id [delete]
 func DeleteTextById(c *gin.Context) {
 	service.DeleteTextById(c)
 }
