@@ -5,23 +5,11 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import axios from "axios"
 
 import { processTextContent, processComment } from '@/const/TextUtils.js'
+import { gurls } from '@/const/urls.js'
 
 onMounted(() => {
     pageFind()
 })
-
-const gurls = {
-    text: {
-        add: '/api/text/add',
-        get: '/api/text/:id',
-        del: '/api/text/:id',
-        page: '/api/text/page',
-    },
-    comment: {
-        add: '/api/text/comment/add',
-        del: '/api/text/comment/:textId/:id'
-    }
-}
 
 const grespOk = 200
 

@@ -6,6 +6,7 @@ import { useRoute } from 'vue-router'
 import axios from "axios"
 
 import { processTextContent } from '@/const/TextUtils.js'
+import { gurls } from '@/const/urls.js'
 
 const route = useRoute()
 
@@ -15,19 +16,6 @@ onMounted(() => {
 
     getText()
 })
-
-const gurls = {
-    text: {
-        add: '/api/text/add',
-        get: '/api/text/:id',
-        del: '/api/text/:id',
-        page: '/api/text/page',
-    },
-    comment: {
-        add: '/api/text/comment/add',
-        del: '/api/text/comment/:textId/:id'
-    }
-}
 
 let textId = "43"
 const grespOk = 200
