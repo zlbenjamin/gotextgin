@@ -260,6 +260,9 @@ const docTemplate = `{
                                     "properties": {
                                         "code": {
                                             "type": "integer"
+                                        },
+                                        "data": {
+                                            "$ref": "#/definitions/service.TextFullVO"
                                         }
                                     }
                                 }
@@ -430,6 +433,45 @@ const docTemplate = `{
                     "description": "Total of comments",
                     "type": "integer",
                     "example": 0
+                },
+                "type": {
+                    "description": "Text type",
+                    "type": "string"
+                },
+                "updateTime": {
+                    "description": "The latest update time",
+                    "type": "string"
+                }
+            }
+        },
+        "service.TextFullVO": {
+            "type": "object",
+            "properties": {
+                "comments": {
+                    "description": "Comments of text\norder by create_time ASC",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/text.TextComment"
+                    }
+                },
+                "content": {
+                    "description": "Text content",
+                    "type": "string"
+                },
+                "createTime": {
+                    "description": "Create time",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Primary key",
+                    "type": "integer"
+                },
+                "tags": {
+                    "description": "Tags of text\norder by create_time ASC",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/text.TextTag"
+                    }
                 },
                 "type": {
                     "description": "Text type",

@@ -89,6 +89,38 @@ definitions:
         description: The latest update time
         type: string
     type: object
+  service.TextFullVO:
+    properties:
+      comments:
+        description: |-
+          Comments of text
+          order by create_time ASC
+        items:
+          $ref: '#/definitions/text.TextComment'
+        type: array
+      content:
+        description: Text content
+        type: string
+      createTime:
+        description: Create time
+        type: string
+      id:
+        description: Primary key
+        type: integer
+      tags:
+        description: |-
+          Tags of text
+          order by create_time ASC
+        items:
+          $ref: '#/definitions/text.TextTag'
+        type: array
+      type:
+        description: Text type
+        type: string
+      updateTime:
+        description: The latest update time
+        type: string
+    type: object
   service.pageFindParams:
     properties:
       kwContent:
@@ -207,6 +239,8 @@ paths:
             - properties:
                 code:
                   type: integer
+                data:
+                  $ref: '#/definitions/service.TextFullVO'
               type: object
         "500":
           description: other errors, such as network errors

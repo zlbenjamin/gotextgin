@@ -79,6 +79,17 @@ type PageFindVO struct {
 	TotalOfComments int64 `json:"totalOfComments" example:"0"`
 }
 
+type TextFullVO struct {
+	// Text
+	sttext.Text
+	// Tags of text
+	// order by create_time ASC
+	Tags []sttext.TextTag `json:"tags"`
+	// Comments of text
+	// order by create_time ASC
+	Comments []sttext.TextComment `json:"comments"`
+}
+
 // --- comment ---
 
 // Params of adding text comment

@@ -40,7 +40,7 @@ func AddText(c *gin.Context) {
 // @Produce json
 // @Param id path int true "PK of text"
 // @Router /api/text/{id} [get]
-// @Success 200 {object} pkg.ApiResponse{code=int} "code=200, 400, 500 or self-defined codes"
+// @Success 200 {object} pkg.ApiResponse{code=int,data=service.TextFullVO} "code=200, 400, 500 or self-defined codes"
 // @Failure 500 {object} pkg.ApiResponse "other errors, such as network errors"
 func GetTextById(c *gin.Context) {
 	service.GetTextById(c)
