@@ -4,29 +4,500 @@
         "contact": {}
     },
     "paths": {
-        "/api/text/:id": {
+        "/api/text/add": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Add a text",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.AddTextParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code=200, 400, 500 or self-defined codes",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/pkg.ApiResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "other errors, such as network errors",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ApiResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/text/comment/add": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Add a comment for a text",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.AddTextCommentParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code=200, 400, 500 or self-defined codes",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/pkg.ApiResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "other errors, such as network errors",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ApiResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/text/comment/{textId}/{id}": {
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Delete a comment",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "primary key of comment",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "primary key of text",
+                        "name": "textId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code=200, 400, 500 or self-defined codes",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/pkg.ApiResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "other errors, such as network errors",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ApiResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/text/page": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Paging text",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.pageFindParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/pkg.ApiResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer"
+                                        },
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/pkg.ApiPageFindResponse"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "list": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/service.PageFindVO"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "other errors, such as network errors",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ApiResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/text/{id}": {
             "get": {
                 "produces": [
                     "application/json"
                 ],
                 "summary": "Get a text by its primary key",
-                "responses": {}
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "PK of text",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code=200, 400, 500 or self-defined codes",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/pkg.ApiResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "other errors, such as network errors",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ApiResponse"
+                        }
+                    }
+                }
             },
             "delete": {
                 "produces": [
                     "application/json"
                 ],
                 "summary": "Delete a text by its primary key",
-                "responses": {}
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "PK of text",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code=200, 400, 500 or self-defined codes",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/pkg.ApiResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "other errors, such as network errors",
+                        "schema": {
+                            "$ref": "#/definitions/pkg.ApiResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "pkg.ApiPageFindResponse": {
+            "type": "object",
+            "properties": {
+                "list": {},
+                "pageNo": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "pageSize": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "totalPage": {
+                    "type": "integer",
+                    "example": 0
+                }
             }
         },
-        "/api/text/add": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Add a text",
-                "responses": {}
+        "pkg.ApiResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 200
+                },
+                "data": {},
+                "message": {
+                    "type": "string",
+                    "example": "OK"
+                }
+            }
+        },
+        "service.AddTextCommentParams": {
+            "type": "object",
+            "required": [
+                "comment",
+                "textId"
+            ],
+            "properties": {
+                "comment": {
+                    "description": "content of the comment",
+                    "type": "string",
+                    "maxLength": 200
+                },
+                "textId": {
+                    "description": "primary key of a text",
+                    "type": "integer"
+                }
+            }
+        },
+        "service.AddTextParams": {
+            "type": "object",
+            "required": [
+                "content"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "maxLength": 10000
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "type": {
+                    "type": "string",
+                    "maxLength": 10
+                }
+            }
+        },
+        "service.PageFindVO": {
+            "type": "object",
+            "properties": {
+                "comments": {
+                    "description": "Comments of text",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/text.TextComment"
+                    }
+                },
+                "content": {
+                    "description": "Text content",
+                    "type": "string"
+                },
+                "createTime": {
+                    "description": "Create time",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Primary key",
+                    "type": "integer"
+                },
+                "tags": {
+                    "description": "Tags of text",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/text.TextTag"
+                    }
+                },
+                "totalOfComments": {
+                    "description": "Total of comments",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "Text type",
+                    "type": "string"
+                },
+                "updateTime": {
+                    "description": "The latest update time",
+                    "type": "string"
+                }
+            }
+        },
+        "service.pageFindParams": {
+            "type": "object",
+            "properties": {
+                "kwContent": {
+                    "description": "key word in the content field",
+                    "type": "string",
+                    "maxLength": 50
+                },
+                "pageNo": {
+                    "description": "page no, start from 1",
+                    "type": "integer",
+                    "example": 1
+                },
+                "pageSize": {
+                    "description": "page size, range [1, 500]",
+                    "type": "integer",
+                    "maximum": 500,
+                    "minimum": 1,
+                    "example": 10
+                },
+                "tags": {
+                    "description": "up to 5 tags",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "golang",
+                        "web"
+                    ]
+                },
+                "type": {
+                    "description": "type of a text",
+                    "type": "string",
+                    "maxLength": 10,
+                    "example": "code"
+                }
+            }
+        },
+        "text.TextComment": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "createTime": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "textId": {
+                    "type": "integer"
+                },
+                "updateTime": {
+                    "type": "string"
+                }
+            }
+        },
+        "text.TextTag": {
+            "type": "object",
+            "properties": {
+                "createTime": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "textId": {
+                    "type": "integer"
+                },
+                "updateTime": {
+                    "type": "string"
+                }
             }
         }
     }

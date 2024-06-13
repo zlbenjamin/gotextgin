@@ -26,36 +26,65 @@ func InitTextApis(r *gin.Engine) {
 }
 
 // @Summary Add a text
+// @Accept json
 // @Produce json
+// @Param data body service.AddTextParams true "request body"
 // @Router /api/text/add [post]
+// @Success 200 {object} pkg.ApiResponse{code=int} "code=200, 400, 500 or self-defined codes"
+// @Failure 500 {object} pkg.ApiResponse "other errors, such as network errors"
 func AddText(c *gin.Context) {
 	service.AddText(c)
 }
 
 // @Summary Get a text by its primary key
 // @Produce json
-// @Router /api/text/:id [get]
+// @Param id path int true "PK of text"
+// @Router /api/text/{id} [get]
+// @Success 200 {object} pkg.ApiResponse{code=int} "code=200, 400, 500 or self-defined codes"
+// @Failure 500 {object} pkg.ApiResponse "other errors, such as network errors"
 func GetTextById(c *gin.Context) {
 	service.GetTextById(c)
 }
 
 // @Summary Delete a text by its primary key
 // @Produce json
-// @Router /api/text/:id [delete]
+// @Param id path int true "PK of text"
+// @Router /api/text/{id} [delete]
+// @Success 200 {object} pkg.ApiResponse{code=int} "code=200, 400, 500 or self-defined codes"
+// @Failure 500 {object} pkg.ApiResponse "other errors, such as network errors"
 func DeleteTextById(c *gin.Context) {
 	service.DeleteTextById(c)
 }
 
+// @Summary Paging text
+// @Accept json
+// @Produce json
+// @Param data body service.pageFindParams true "request body"
+// @Router /api/text/page [post]
+// @Success 200 {object} pkg.ApiResponse{code=int,data=pkg.ApiPageFindResponse{list=[]service.PageFindVO}}
+// "code=200, 400, 500 or self-defined codes"
+// @Failure 500 {object} pkg.ApiResponse "other errors, such as network errors"
 func PageFindText(c *gin.Context) {
 	service.PageFindText(c)
 }
 
-// Add a comment for a text
+// @Summary Add a comment for a text
+// @Accept json
+// @Produce json
+// @Param data body service.AddTextCommentParams true "request body"
+// @Router /api/text/comment/add [post]
+// @Success 200 {object} pkg.ApiResponse{code=int} "code=200, 400, 500 or self-defined codes"
+// @Failure 500 {object} pkg.ApiResponse "other errors, such as network errors"
 func AddTextComment(c *gin.Context) {
 	service.AddTextComment(c)
 }
 
-// Delete a comment
+// @Summary Delete a comment
+// @Produce json
+// @Param data path service.DelTextCommentParams true "path variables"
+// @Router /api/text/comment/{textId}/{id} [delete]
+// @Success 200 {object} pkg.ApiResponse{code=int} "code=200, 400, 500 or self-defined codes"
+// @Failure 500 {object} pkg.ApiResponse "other errors, such as network errors"
 func DeleteTextCommentById(c *gin.Context) {
 	service.DeleteTextCommentById(c)
 }

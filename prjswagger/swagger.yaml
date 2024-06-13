@@ -1,21 +1,318 @@
+definitions:
+  pkg.ApiPageFindResponse:
+    properties:
+      list: {}
+      pageNo:
+        example: 1
+        type: integer
+      pageSize:
+        example: 10
+        type: integer
+      total:
+        example: 0
+        type: integer
+      totalPage:
+        example: 0
+        type: integer
+    type: object
+  pkg.ApiResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data: {}
+      message:
+        example: OK
+        type: string
+    type: object
+  service.AddTextCommentParams:
+    properties:
+      comment:
+        description: content of the comment
+        maxLength: 200
+        type: string
+      textId:
+        description: primary key of a text
+        type: integer
+    required:
+    - comment
+    - textId
+    type: object
+  service.AddTextParams:
+    properties:
+      content:
+        maxLength: 10000
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      type:
+        maxLength: 10
+        type: string
+    required:
+    - content
+    type: object
+  service.PageFindVO:
+    properties:
+      comments:
+        description: Comments of text
+        items:
+          $ref: '#/definitions/text.TextComment'
+        type: array
+      content:
+        description: Text content
+        type: string
+      createTime:
+        description: Create time
+        type: string
+      id:
+        description: Primary key
+        type: integer
+      tags:
+        description: Tags of text
+        items:
+          $ref: '#/definitions/text.TextTag'
+        type: array
+      totalOfComments:
+        description: Total of comments
+        type: integer
+      type:
+        description: Text type
+        type: string
+      updateTime:
+        description: The latest update time
+        type: string
+    type: object
+  service.pageFindParams:
+    properties:
+      kwContent:
+        description: key word in the content field
+        maxLength: 50
+        type: string
+      pageNo:
+        description: page no, start from 1
+        example: 1
+        type: integer
+      pageSize:
+        description: page size, range [1, 500]
+        example: 10
+        maximum: 500
+        minimum: 1
+        type: integer
+      tags:
+        description: up to 5 tags
+        example:
+        - golang
+        - web
+        items:
+          type: string
+        type: array
+      type:
+        description: type of a text
+        example: code
+        maxLength: 10
+        type: string
+    type: object
+  text.TextComment:
+    properties:
+      comment:
+        type: string
+      createTime:
+        type: string
+      id:
+        type: integer
+      textId:
+        type: integer
+      updateTime:
+        type: string
+    type: object
+  text.TextTag:
+    properties:
+      createTime:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      textId:
+        type: integer
+      updateTime:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
-  /api/text/:id:
+  /api/text/{id}:
     delete:
+      parameters:
+      - description: PK of text
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: code=200, 400, 500 or self-defined codes
+          schema:
+            allOf:
+            - $ref: '#/definitions/pkg.ApiResponse'
+            - properties:
+                code:
+                  type: integer
+              type: object
+        "500":
+          description: other errors, such as network errors
+          schema:
+            $ref: '#/definitions/pkg.ApiResponse'
       summary: Delete a text by its primary key
     get:
+      parameters:
+      - description: PK of text
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: code=200, 400, 500 or self-defined codes
+          schema:
+            allOf:
+            - $ref: '#/definitions/pkg.ApiResponse'
+            - properties:
+                code:
+                  type: integer
+              type: object
+        "500":
+          description: other errors, such as network errors
+          schema:
+            $ref: '#/definitions/pkg.ApiResponse'
       summary: Get a text by its primary key
   /api/text/add:
     post:
+      consumes:
+      - application/json
+      parameters:
+      - description: request body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/service.AddTextParams'
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: code=200, 400, 500 or self-defined codes
+          schema:
+            allOf:
+            - $ref: '#/definitions/pkg.ApiResponse'
+            - properties:
+                code:
+                  type: integer
+              type: object
+        "500":
+          description: other errors, such as network errors
+          schema:
+            $ref: '#/definitions/pkg.ApiResponse'
       summary: Add a text
+  /api/text/comment/{textId}/{id}:
+    delete:
+      parameters:
+      - description: primary key of comment
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: primary key of text
+        in: path
+        name: textId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code=200, 400, 500 or self-defined codes
+          schema:
+            allOf:
+            - $ref: '#/definitions/pkg.ApiResponse'
+            - properties:
+                code:
+                  type: integer
+              type: object
+        "500":
+          description: other errors, such as network errors
+          schema:
+            $ref: '#/definitions/pkg.ApiResponse'
+      summary: Delete a comment
+  /api/text/comment/add:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: request body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/service.AddTextCommentParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code=200, 400, 500 or self-defined codes
+          schema:
+            allOf:
+            - $ref: '#/definitions/pkg.ApiResponse'
+            - properties:
+                code:
+                  type: integer
+              type: object
+        "500":
+          description: other errors, such as network errors
+          schema:
+            $ref: '#/definitions/pkg.ApiResponse'
+      summary: Add a comment for a text
+  /api/text/page:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: request body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/service.pageFindParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/pkg.ApiResponse'
+            - properties:
+                code:
+                  type: integer
+                data:
+                  allOf:
+                  - $ref: '#/definitions/pkg.ApiPageFindResponse'
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/definitions/service.PageFindVO'
+                        type: array
+                    type: object
+              type: object
+        "500":
+          description: other errors, such as network errors
+          schema:
+            $ref: '#/definitions/pkg.ApiResponse'
+      summary: Paging text
 swagger: "2.0"
