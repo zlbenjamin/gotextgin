@@ -54,6 +54,12 @@ func (params AddTextParams) ConvertToText() sttext.Text {
 	return ret
 }
 
+// Get text by ID
+type GetTextDTO struct {
+	// primary key of text
+	Id int32 `json:"id" uri:"id" binding:"required,number,gt=0"`
+}
+
 // Params of page find
 type pageFindParams struct {
 	// page no, start from 1

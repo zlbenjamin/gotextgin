@@ -3,7 +3,6 @@ package service
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -97,49 +96,66 @@ func addTagsForText(tx *gorm.DB, id int32, tags []string) error {
 
 // Get a text by id
 func GetTextById(c *gin.Context) {
-	id := c.Param("id")
-	idi, err := strconv.Atoi(id)
-	if err != nil {
+	var dto GetTextDTO
+	if err := c.ShouldBindUri(&dto); err != nil {
 		resp := pkg.ApiResponse{
 			Code:    400,
-			Message: "Invalid id",
+			Message: "Invalid params: " + err.Error(),
 		}
 		c.JSON(http.StatusOK, resp)
 		return
 	}
-	if idi < 1 {
+	idi := dto.Id
+
+	// return data
+	var textData TextFullVO
+
+	// 1/3 text
+	var record sttext.Text
+	db := database.GetDB()
+	result := db.First(&record, idi)
+	if errors.Is(result.Error, sql.ErrNoRows) {
 		resp := pkg.ApiResponse{
 			Code:    400,
-			Message: "Invalid id: < 1",
+			Message: "No data for id",
 		}
 		c.JSON(http.StatusOK, resp)
 		return
-	}
-
-	var textData sttext.Text
-
-	dql := "SELECT * FROM " + sttext.Table_Text + " WHERE id = ?"
-	row := database.GetOneRecrod(dql, idi)
-	if err := row.Scan(
-		&textData.Id,
-		&textData.Content,
-		&textData.Type,
-		&textData.CreateTime,
-		&textData.UpdateTime,
-	); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			resp := pkg.ApiResponse{
-				Code:    400,
-				Message: "No data for id",
-			}
-			c.JSON(http.StatusOK, resp)
-			return
-		}
-
-		log.Println("Query failed: id=", id, "err=", err.Error())
+	} else if result.Error != nil {
+		log.Println("Query failed: id=", idi, "err=", result.Error)
 		resp := pkg.ApiResponse{
 			Code:    500,
-			Message: "Query failed",
+			Message: "Query text failed",
+		}
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+
+	textData.Text = record
+
+	// 2/3 tags
+	result = db.Where("text_id = ?", idi).Order("create_time ASC").Find(&textData.Tags)
+	if errors.Is(result.Error, sql.ErrNoRows) {
+		textData.Tags = make([]sttext.TextTag, 0)
+	} else if result.Error != nil {
+		log.Println("Query tags failed: id=", idi, "err=", result.Error)
+		resp := pkg.ApiResponse{
+			Code:    500,
+			Message: "Query tags failed",
+		}
+		c.JSON(http.StatusOK, resp)
+		return
+	}
+
+	// 3/3 comments
+	result = db.Where("text_id = ?", idi).Order("create_time DESC").Find(&textData.Comments)
+	if errors.Is(result.Error, sql.ErrNoRows) {
+		textData.Comments = make([]sttext.TextComment, 0)
+	} else if result.Error != nil {
+		log.Println("Query comments failed: id=", idi, "err=", result.Error)
+		resp := pkg.ApiResponse{
+			Code:    500,
+			Message: "Query comments failed",
 		}
 		c.JSON(http.StatusOK, resp)
 		return
@@ -520,7 +536,6 @@ func DeleteTextCommentById(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("todo cmt=", cmt, "text_id=", params1.TextId)
 	if params1.TextId != cmt.TextId {
 		log.Println("Delete comment failed: Comment doesn't belong to the text. params=", params1)
 		resp := pkg.ApiResponse{
