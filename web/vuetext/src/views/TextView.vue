@@ -5,7 +5,7 @@ import { useRoute } from 'vue-router'
 
 import axios from "axios"
 
-import { processTextContent } from '@/const/TextUtils.js'
+import { processTextContent, processComment } from '@/const/TextUtils.js'
 import { gurls } from '@/const/urls.js'
 
 const route = useRoute()
@@ -67,10 +67,16 @@ function copyToTextFull(respData) {
     <span>{{ textFull.createTime }}</span>
 </div>
 <div class="text-tag">
-
+    <div style="font-weight: bold;">Tags:{{ textFull.tags.length }}</div>
+    <el-link type="success" v-for="(item,index) in textFull.tags" class="list-tag-name">{{ item.name }}</el-link>
 </div>
 <div class="text-comment">
-
+    <div style="font-weight: bold;">Comments:{{ textFull.comments.length }}</div>
+    <div v-for="(item,index) in textFull.comments">
+        <span>{{ index+1 }}</span>
+        <div v-html="processComment(item.comment)" class="list-comment-item"></div>
+        <div>{{ item.createTime }}</div>
+    </div>
 </div>
 </template>
 
@@ -79,6 +85,16 @@ function copyToTextFull(respData) {
     border-bottom: 1px solid black;
 }
 .text-main-content {
+    color: chocolate;
+}
+
+.list-tag-name {
+    display: inline-block;
+    width: 10em;
+    text-align: left;
+}
+
+.list-comment-item {
     color: chocolate;
 }
 </style>
