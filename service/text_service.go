@@ -24,7 +24,7 @@ func AddText(c *gin.Context) {
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		}
-		c.JSON(http.StatusBadRequest, resp)
+		c.JSON(http.StatusOK, resp)
 		return
 	}
 
@@ -178,7 +178,7 @@ func DeleteTextById(c *gin.Context) {
 			Code:    400,
 			Message: "Bad request",
 		}
-		c.JSON(http.StatusBadRequest, resp)
+		c.JSON(http.StatusOK, resp)
 		return
 	}
 	if idi < 1 {
@@ -186,7 +186,7 @@ func DeleteTextById(c *gin.Context) {
 			Code:    400,
 			Message: "Bad request < 1",
 		}
-		c.JSON(http.StatusBadRequest, resp)
+		c.JSON(http.StatusOK, resp)
 		return
 	}
 
@@ -227,7 +227,7 @@ func PageFindText(c *gin.Context) {
 			Code:    400,
 			Message: err.Error(),
 		}
-		c.JSON(http.StatusBadRequest, resp)
+		c.JSON(http.StatusOK, resp)
 		return
 	}
 
@@ -458,7 +458,7 @@ func AddTextComment(c *gin.Context) {
 			Code:    400,
 			Message: err.Error(),
 		}
-		c.JSON(http.StatusBadRequest, resp)
+		c.JSON(http.StatusOK, resp)
 		return
 	}
 
@@ -470,7 +470,7 @@ func AddTextComment(c *gin.Context) {
 			Code:    400,
 			Message: "No text with this id",
 		}
-		c.JSON(http.StatusBadRequest, resp)
+		c.JSON(http.StatusOK, resp)
 		return
 	} else if err != nil {
 		log.Println("Add comment failed: err=", err.Error(), ", params=", params)
@@ -479,7 +479,7 @@ func AddTextComment(c *gin.Context) {
 			Message: "Server error",
 			Data:    err.Error(),
 		}
-		c.JSON(http.StatusInternalServerError, resp)
+		c.JSON(http.StatusOK, resp)
 		return
 	}
 
@@ -509,7 +509,7 @@ func DeleteTextCommentById(c *gin.Context) {
 			Code:    400,
 			Message: "Invalid params: " + err.Error(),
 		}
-		c.JSON(http.StatusBadRequest, resp)
+		c.JSON(http.StatusOK, resp)
 		return
 	}
 
