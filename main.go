@@ -9,6 +9,9 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	_ "github.com/swaggo/gin-swagger/example/basic/docs"
 	"github.com/zlbenjamin/gotextgin/api"
 	"github.com/zlbenjamin/gotextgin/pkg/middlewares"
 	pkg "github.com/zlbenjamin/gotextgin/pkg/text"
@@ -51,6 +54,9 @@ func main() {
 
 	r.NoRoute(middlewares.Handle404())
 
+	// url := ginSwagger.URL("http://localhost:40000/swagger/doc.json")
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	// custom validators
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		log.Println("Register validators...")
@@ -60,9 +66,9 @@ func main() {
 	api.InitTextApis(r)
 
 	// addr := ":40000" // ok
-	addr := "0.0.0.0:40000" // same with the up addr
+	// addr := "0.0.0.0:40000" // same with the up addr
 	// Warning, Can't deploy on container!
-	// addr := "localhost:40000"
+	addr := "localhost:40000"
 	s := &http.Server{
 		Addr:           addr,
 		Handler:        r,
