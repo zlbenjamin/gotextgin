@@ -340,6 +340,11 @@ function httpDeleteComment(cmt) {
     });
 }
 
+// make url for jump to text detail
+function makeTextIdUrl(textId) {
+    return "/text/" + textId
+}
+
 </script>
 
 <template>
@@ -422,7 +427,9 @@ function httpDeleteComment(cmt) {
         'content-in-list-0':(index%2 == 0),
         'content-in-list-1':(index%2 == 1)
     }">
-    <span class="tf tf-id">{{ item.id }}</span>
+    <span class="tf tf-id">
+        <el-link type="primary" target="_blank" :href="makeTextIdUrl(item.id)">{{ item.id }}</el-link>
+    </span>
     <span class="tf tf-type">Type: {{ item.type }}</span>
     <span class="tf tf-time">{{ item.createTime }}</span>
     <Delete @click="onDeleteText(item)" class="icon-delete-tag" title="Delete the text" />

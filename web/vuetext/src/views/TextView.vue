@@ -60,6 +60,7 @@ function copyToTextFull(respData) {
 </script>
 
 <template>
+    <el-link type="primary" href="/">goto Home Page</el-link>
 <div class="text-main">
     <span>ID: {{ textFull.id }}</span>
     <span>TYPE: {{ textFull.type }}</span>
