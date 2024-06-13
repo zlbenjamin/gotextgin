@@ -5,13 +5,14 @@ import (
 	"net/http"
 	"time"
 
+	_ "github.com/zlbenjamin/gotextgin/docs"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	_ "github.com/swaggo/gin-swagger/example/basic/docs"
 	"github.com/zlbenjamin/gotextgin/api"
 	"github.com/zlbenjamin/gotextgin/pkg/middlewares"
 	pkg "github.com/zlbenjamin/gotextgin/pkg/text"
