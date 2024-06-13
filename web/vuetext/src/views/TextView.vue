@@ -5,12 +5,14 @@ import { useRoute } from 'vue-router'
 
 import axios from "axios"
 
+import { processTextContent } from '@/const/TextUtils.js'
+
 const route = useRoute()
 
 onMounted(() => {
     textId = route.params.id
     console.log("textId=" + textId)
-    
+
     getText()
 })
 
@@ -30,12 +32,20 @@ const gurls = {
 let textId = "43"
 const grespOk = 200
 
-const textFull = reactive({})
+const textFull = reactive({
+    id:0,
+    type:'',
+    content:'',
+    createTime:'',
+    updateTime:'',
+    comments:[],
+    tags:[],
+})
 
 function getText() {
     let url = gurls.text.get
     url = url.replace(":id", textId)
-    console.log("todo url=" + url)
+    
     axios
     .get(url)
     .then(function(response){
@@ -46,8 +56,7 @@ function getText() {
             return
         }
 
-        console.log("todo text=" + JSON.stringify(result.data))
-        textFull=result.data
+        copyToTextFull(result.data)
     })
     .catch(function(error) {
         console.log("Get text error:")
@@ -56,14 +65,32 @@ function getText() {
     })
 }
 
+function copyToTextFull(respData) {
+    Object.assign(textFull, respData)
+}
+
 </script>
 
 <template>
-<div>
-    todo for text detail...
+<div class="text-main">
+    <span>ID: {{ textFull.id }}</span>
+    <span>TYPE: {{ textFull.type }}</span>
+    <div class="text-main-content" v-html="processTextContent(textFull.content)"></div>
+    <span>{{ textFull.createTime }}</span>
+</div>
+<div class="text-tag">
+
+</div>
+<div class="text-comment">
+
 </div>
 </template>
 
 <style scoped>
-
+.text-main, .text-tag  {
+    border-bottom: 1px solid black;
+}
+.text-main-content {
+    color: chocolate;
+}
 </style>
