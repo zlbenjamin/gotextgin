@@ -53,35 +53,44 @@ func (params AddTextParams) ConvertToText() sttext.Text {
 
 // Params of page find
 type pageFindParams struct {
-	PageNo    int32    `json:"pageNo" binding:"number,gt=0"`
-	PageSize  int32    `json:"pageSize" binding:"number,gte=1,lte=500"`
-	KwContent string   `json:"kwContent" binding:"max=50"`
-	Type      string   `json:"type" binding:"max=10"`
-	Tags      []string `json:"tags" binding:"checktags"`
+	// page no, start from 1
+	PageNo int32 `json:"pageNo" binding:"number,gt=0" example:"1"`
+	// page size, range [1, 500]
+	PageSize int32 `json:"pageSize" binding:"number,gte=1,lte=500" example:"10"`
+	// key word in the content field
+	KwContent string `json:"kwContent" binding:"max=50"`
+	// type of a text
+	Type string `json:"type" binding:"max=10" example:"code"`
+	// up to 5 tags
+	Tags []string `json:"tags" binding:"checktags" example:"golang,web"`
 }
 
 type PageFindVO struct {
+	// Text
 	sttext.Text
-	Tags            []sttext.TextTag     `json:"tags"`
-	Comments        []sttext.TextComment `json:"comments"`
-	TotalOfComments int64                `json:"totalOfComments"`
+	// Tags of text
+	Tags []sttext.TextTag `json:"tags"`
+	// Comments of text
+	Comments []sttext.TextComment `json:"comments"`
+	// Total of comments
+	TotalOfComments int64 `json:"totalOfComments", example:"0"`
 }
 
 // --- comment ---
 
 // Params of adding text comment
 type AddTextCommentParams struct {
-	TextId  int32  `json:"textId" binding:"required,number,gt=0"`
+	// primary key of a text
+	TextId int32 `json:"textId" binding:"required,number,gt=0"`
+	// content of the comment
 	Comment string `json:"comment" binding:"required,max=200"`
 }
 
 // Params of deleting comment
 type DelTextCommentParams struct {
+	// primary key of text
 	TextId int32 `json:"textId" uri:"textId" binding:"required,number,gt=0"`
-	// Error:Field validation for 'Id' failed on the 'required' tag
-	// Id uint64 `json:"id" binding:"required,number,gt=0"` // no
-	// Error:Field validation for 'Id' failed on the 'gt' tag
-	// Id uint64 `json:"id" binding:"number,gt=0"` // no
+	// primary key of comment
 	Id uint64 `json:"id" uri:"id" binding:"required,number,gt=0"`
 }
 

@@ -13,10 +13,15 @@ const Table_Text_Tag = "text_tag"
 
 // table: text
 type Text struct {
-	Id         int32     `json:"id" gorm:"primaryKey;comment:ID"`
-	Content    string    `json:"content" gorm:"not null;comment:content of a Text;type:MEDIUMTEXT"`
-	Type       string    `json:"type" gorm:"not null;size:100;comment:type of a Text"`
+	// Primary key
+	Id int32 `json:"id" gorm:"primaryKey;comment:ID"`
+	// Text content
+	Content string `json:"content" gorm:"not null;comment:content of a Text;type:MEDIUMTEXT"`
+	// Text type
+	Type string `json:"type" gorm:"not null;size:100;comment:type of a Text"`
+	// Create time
 	CreateTime time.Time `json:"createTime" gorm:"not null;comment:create time;default:CURRENT_TIMESTAMP;index"`
+	// The latest update time
 	UpdateTime time.Time `json:"updateTime" gorm:"not null;comment:the latest update time;default:CURRENT_TIMESTAMP"`
 }
 
