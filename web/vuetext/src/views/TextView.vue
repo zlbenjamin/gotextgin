@@ -57,6 +57,44 @@ function copyToTextFull(respData) {
     Object.assign(textFull, respData)
 }
 
+
+// delete comment
+function onDeleteComment(cmt) {
+    ElMessageBox.confirm("Confirm the deletion of the comment?")
+    .then(() => {
+        httpDeleteComment(cmt)
+    })
+    .catch((e) => {
+        // e is cancel
+    })
+}
+
+function httpDeleteComment(cmt) {
+    let url = gurls.comment.del
+    url = url.replaceAll(":textId", cmt.textId)
+    url = url.replaceAll(":id", cmt.id)
+    
+    axios
+    .delete(url)
+    .then(function(response) {
+        let result = response.data;
+        if (result.code != grespOk) {
+            ElMessage.error('Delete comment failed: ' + JSON.stringify(result))
+            return;
+        }
+
+        ElMessage.success('Delete comment success🎈')
+
+        // get Text again
+        getText()
+    })
+    .catch(function(error) {
+        console.error("Delete comment error: ")
+        console.error(error);
+        ElMessage.error('Delete comment error: ' + error.message);
+    });
+}
+
 </script>
 
 <template>
@@ -74,9 +112,11 @@ function copyToTextFull(respData) {
 <div class="text-comment">
     <div style="font-weight: bold;">Comments:{{ textFull.comments.length }}</div>
     <div v-for="(item,index) in textFull.comments">
-        <span>{{ index+1 }}</span>
+        <span>{{ item.createTime }}</span>
         <div v-html="processComment(item.comment)" class="list-comment-item"></div>
-        <div>{{ item.createTime }}</div>
+        <div>
+            <Delete @click="onDeleteComment(item)" class="icon-delete-tag" />
+        </div>
     </div>
 </div>
 </template>
@@ -98,4 +138,12 @@ function copyToTextFull(respData) {
 .list-comment-item {
     color: chocolate;
 }
+
+.icon-delete-tag {
+    color: red;
+    width: 1em;
+    height: 1em; 
+    margin-right: 8px;
+}
+
 </style>
