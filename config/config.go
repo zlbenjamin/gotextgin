@@ -1,9 +1,11 @@
 package config
 
 import (
-	"encoding/json"
+	"fmt"
 	"log"
-	"os"
+
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 )
 
 type Database struct {
@@ -25,27 +27,51 @@ type Config struct {
 
 var GlobalConfigSetting = &Config{}
 
+var (
+	cfg  = pflag.StringP("config", "c", "", "Configuration file")
+	help = pflag.BoolP("help", "h", false, "Show this help message")
+)
+
 func init() {
-	configPath := os.Getenv("gomysqlConfig")
-	if configPath == "" {
-		log.Println("Warning: There is no env named 'gomysqlConfig'.")
+	fmt.Println(1)
+	pflag.Parse()
+	if *help {
+		pflag.Usage()
 		return
 	}
 
-	log.Println("Start to config DB by file:", configPath)
-
-	cfile, err := os.Open(configPath)
-	if err != nil {
-		log.Fatalln("Invalid gomysqlConfig. err=", err.Error())
+	// read config
+	if *cfg != "" {
+		viper.SetConfigFile(*cfg)
+		viper.SetConfigType("yaml")
+	} else {
+		viper.AddConfigPath(".")
+		viper.AddConfigPath("$HOME/.gotextgin")
+		viper.SetConfigName("gotextgin")
 	}
-	defer cfile.Close()
 
-	// json decoder
-	decoder := json.NewDecoder(cfile)
-	err = decoder.Decode(GlobalConfigSetting)
-	if err != nil {
-		log.Fatalln("gomysqlConfig can't be decoded. err=", err.Error())
+	if err := viper.ReadInConfig(); err != nil {
+		panic(fmt.Errorf("fatal error config file: %s", err))
 	}
+
+	log.Printf("[viper]Used configuation file is: %s\n", viper.ConfigFileUsed())
+}
+
+func init() {
+	// initialize first
+	GlobalConfigSetting.Database = &Database{}
+
+	GlobalConfigSetting.Database.Type = viper.GetString("database.type")
+	GlobalConfigSetting.Database.Name = viper.GetString("database.name")
+	GlobalConfigSetting.Database.Host = viper.GetString("database.host")
+	GlobalConfigSetting.Database.Port = viper.GetString("database.port")
+	GlobalConfigSetting.Database.User = viper.GetString("database.user")
+	GlobalConfigSetting.Database.Password = viper.GetString("database.password")
+	GlobalConfigSetting.Database.TablePrefix = viper.GetString("database.table_prefix")
+
+	fmt.Println("todo delete:")
+	fmt.Println(GlobalConfigSetting)
+	fmt.Println(GlobalConfigSetting.Database)
 
 	log.Println("Get config DB success.")
 	DatabaseSetting = GlobalConfigSetting.Database
