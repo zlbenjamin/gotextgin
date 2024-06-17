@@ -5,7 +5,6 @@ import (
 	"errors"
 	"log"
 	"net/http"
-	"strconv"
 	"strings"
 	"sync"
 
@@ -171,48 +170,82 @@ func GetTextById(c *gin.Context) {
 
 // Delete a text by id
 func DeleteTextById(c *gin.Context) {
-	id := c.Param("id")
-	idi, err := strconv.Atoi(id)
-	if err != nil {
+	var dto TextIdDTO
+	if err := c.ShouldBindUri(&dto); err != nil {
 		resp := pkg.ApiResponse{
 			Code:    400,
-			Message: "Bad request",
+			Message: "Invalid params: " + err.Error(),
 		}
 		c.JSON(http.StatusOK, resp)
 		return
 	}
-	if idi < 1 {
-		resp := pkg.ApiResponse{
-			Code:    400,
-			Message: "Bad request < 1",
+	idi := dto.Id
+
+	// Exec in a transaction
+	// delete text, tags, comments
+	rowsAffecteds := struct {
+		R1 int64
+		R2 int64
+		R3 int64
+	}{}
+	db := database.GetDB()
+	err := db.Transaction(func(tx *gorm.DB) error {
+		result := tx.Delete(&sttext.Text{}, idi)
+		if result.Error != nil {
+			log.Printf("delete text failed: id=%d, err=%s\n", idi, result.Error.Error())
+			return result.Error
 		}
-		c.JSON(http.StatusOK, resp)
-		return
-	}
-
-	// Exec
-	dml := `DELETE FROM ` + sttext.Table_Text + ` WHERE id = ?`
-	var num int64
-	if num, err = database.DeleteRecordByPk(dml, idi); err != nil {
-		log.Println("Delete text failed: id=", id, "err=", err)
-		resp := pkg.ApiResponse{
-			Code:    500,
-			Message: "Delete failed:" + err.Error(),
+		if result.RowsAffected < 1 {
+			// record has been deleted.
+			return nil
 		}
-		c.JSON(http.StatusOK, resp)
-		return
-	}
+		rowsAffecteds.R1 = result.RowsAffected
 
-	resp := pkg.ApiResponse{
-		Code:    200,
-		Message: "OK",
-		Data:    true,
-	}
+		result = tx.Where("text_id = ?", idi).Delete(&sttext.TextTag{})
+		if result.Error != nil {
+			log.Printf("delete text failed#tags: id=%d, err=%s\n", idi, result.Error.Error())
+			return result.Error
+		}
+		rowsAffecteds.R2 = result.RowsAffected
 
-	if num > 0 {
-		log.Println("Delete text success. id=", id)
+		result = tx.Where("text_id = ?", idi).Delete(&sttext.TextComment{})
+		if result.Error != nil {
+			log.Printf("delete text failed#comments: id=%d, err=%s\n", idi, result.Error.Error())
+			return result.Error
+		}
+		rowsAffecteds.R3 = result.RowsAffected
+
+		// stop delete type#1
+		// log.Panicln("start a error...")
+
+		// stop delete type#2
+		// if 1 == 1 {
+		// 	return errors.New("mock a error")
+		// }
+
+		// success
+		// return nil will commit the whole transaction
+		return nil
+	})
+
+	var resp pkg.ApiResponse
+	if err == nil {
+		if rowsAffecteds.R1 > 0 {
+			log.Printf("Delete text success. id=%d, deleted rowsAffecteds=[%d, %d, %d]",
+				idi, rowsAffecteds.R1, rowsAffecteds.R2, rowsAffecteds.R3)
+		}
+		resp = pkg.ApiResponse{
+			Code:    200,
+			Message: "OK",
+			Data:    true,
+		}
 	} else {
-		resp.Message = "Do nothing"
+		log.Printf("Delete text failed. id=%d, err=%s\n", idi, err.Error())
+		resp = pkg.ApiResponse{
+			Code:    500,
+			Message: "DELETE FAILED",
+			Data:    false,
+		}
 	}
 
 	c.JSON(http.StatusOK, resp)

@@ -60,6 +60,12 @@ type GetTextDTO struct {
 	Id int32 `json:"id" uri:"id" binding:"required,number,gt=0"`
 }
 
+// TextId DTO
+type TextIdDTO struct {
+	// primary key of text
+	Id int32 `json:"id" uri:"id" binding:"required,number,gt=0"`
+}
+
 // Params of page find
 type pageFindParams struct {
 	// page no, start from 1
