@@ -20,11 +20,6 @@ import (
 	"github.com/zlbenjamin/gotextgin/service/database"
 )
 
-func init() {
-	// Connect to Database
-	database.InitMySqlPool()
-}
-
 // create or update tables with gorm
 func init() {
 	db := database.GetDB()
